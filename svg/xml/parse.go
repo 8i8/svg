@@ -44,9 +44,9 @@ func (p *parser) init() {
 	p.head.Type = Head
 }
 
-// whichType returns the type of an xml.Token as one of the packages
+// WhichType returns the type of an xml.Token as one of the packages
 // mirroring constants.
-func whichType(t xml.Token) (typ NodeType) {
+func WhichType(t xml.Token) (typ NodeType) {
 	switch t.(type) {
 	case xml.StartElement:
 		return StartElement
@@ -64,8 +64,8 @@ func whichType(t xml.Token) (typ NodeType) {
 	return
 }
 
-// copyNode returns a copy of the given node.
-func copyNode(t xml.Token) (node xml.Token) {
+// CopyNode returns a copy of the given node.
+func CopyNode(t xml.Token) (node xml.Token) {
 	switch v := t.(type) {
 	case xml.StartElement:
 		return v.Copy()
@@ -125,7 +125,7 @@ func (p *parser) nestNode(t NodeType, v xml.Token) {
 func (p *parser) parseToken(t, n xml.Token) {
 	switch v := t.(type) {
 	case xml.StartElement:
-		next := whichType(n)
+		next := WhichType(n)
 		if next == EndElement {
 			p.addNode(StartElement, v.Copy())
 			if verbose {
@@ -195,7 +195,7 @@ func (p *parser) parse(in io.Reader) *Node {
 			continue
 		}
 		p.parseToken(token, next)
-		token = copyNode(next)
+		token = CopyNode(next)
 	}
 	return p.head.node
 }
