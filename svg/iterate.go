@@ -1,11 +1,11 @@
-package xml
+package svg
 
 import (
 	"io"
 )
 
 // IterFunc is the function called upon each iteration of the iteratior.
-type IterFunc func(io.Writer, *Node, interface{}) *Node
+type IterFunc func(io.Writer, *Node) *Node
 
 type stack []*Node
 
@@ -36,7 +36,7 @@ func (i iterator) iterate(w io.Writer, n *Node, fn IterFunc) {
 
 	// Work to be done.
 	if fn != nil {
-		n = fn(w, n, nil)
+		n = fn(w, n)
 	}
 
 	// Nested elements.

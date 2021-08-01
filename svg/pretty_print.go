@@ -1,21 +1,12 @@
-package xml
+package svg
 
 import (
-	"encoding/xml"
 	"fmt"
 	"io"
+	"svg/svg/xml"
 )
 
-func tabIndent(n int) []byte {
-	buf := make([]byte, n)
-	for n > 0 {
-		buf[n-1] = '\t'
-		n--
-	}
-	return buf
-}
-
-func PrettyPrint(w io.Writer, n *Node, inter interface{}) *Node {
+func PrettyPrint(w io.Writer, n *Node) *Node {
 	switch v := n.Elem.(type) {
 	case xml.StartElement:
 		io.WriteString(w, "<"+v.Name.Local)
@@ -23,7 +14,7 @@ func PrettyPrint(w io.Writer, n *Node, inter interface{}) *Node {
 			io.WriteString(w, " "+attr.Name.Local+"=\"")
 			io.WriteString(w, attr.Value+"\"")
 		}
-		if n.NextSibling.Type == EndElement {
+		if _, ok := n.NextSibling.Elem.(xml.EndElement); ok {
 			io.WriteString(w, " />")
 			n = n.NextSibling
 		} else {
@@ -47,4 +38,13 @@ func PrettyPrint(w io.Writer, n *Node, inter interface{}) *Node {
 		fmt.Printf("svg/xml: printNode: unknown type: %#v\n", v)
 	}
 	return n
+}
+
+func tabIndent(n int) []byte {
+	buf := make([]byte, n)
+	for n > 0 {
+		buf[n-1] = '\t'
+		n--
+	}
+	return buf
 }
