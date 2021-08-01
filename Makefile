@@ -2,7 +2,7 @@ all:
 	clear
 	-rm run
 	go build -o run cmd/main.go
-	./run assets/test
+	./run assets/chart.svg
 
 fire:
 	clear
@@ -14,7 +14,7 @@ next:
 	clear
 	-rm run
 	go build -o run cmd/main.go
-	./run assets/LIOT-LOUVEAU-Anais.rasi.svg
+	./run assets/test
 
 debug:
 	clear
