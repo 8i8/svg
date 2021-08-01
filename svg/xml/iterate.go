@@ -5,7 +5,7 @@ import (
 )
 
 // IterFunc is the function called upon each iteration of the iteratior.
-type IterFunc func(io.Writer, *Node, int, interface{}) (*Node, int)
+type IterFunc func(io.Writer, *Node, interface{}) *Node
 
 type stack []*Node
 
@@ -27,7 +27,7 @@ type iterator struct {
 	stack
 }
 
-func (i iterator) iterate(w io.Writer, n *Node, depth int, fn IterFunc) {
+func (i iterator) iterate(w io.Writer, n *Node, fn IterFunc) {
 
 	// End of the branch.
 	if n == nil {
@@ -36,22 +36,21 @@ func (i iterator) iterate(w io.Writer, n *Node, depth int, fn IterFunc) {
 
 	// Work to be done.
 	if fn != nil {
-		n, depth = fn(w, n, depth, nil)
+		n = fn(w, n, nil)
 	}
 
 	// Nested elements.
 	if n.FirstChild != nil {
-		i.iterate(w, n.FirstChild, depth, fn)
+		i.iterate(w, n.FirstChild, fn)
 	}
 
 	// Siblings.
 	if n.NextSibling != nil {
-		i.iterate(w, n.NextSibling, depth, fn)
+		i.iterate(w, n.NextSibling, fn)
 	}
 }
 
 func (n *Node) Iterate(w io.Writer, fn IterFunc) {
-	var depth int
 	i := iterator{make(stack, 0, 10)}
-	i.iterate(w, n, depth, fn)
+	i.iterate(w, n, fn)
 }

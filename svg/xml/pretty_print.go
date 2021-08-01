@@ -15,7 +15,7 @@ func tabIndent(n int) []byte {
 	return buf
 }
 
-func PrettyPrint(w io.Writer, n *Node, depth int, inter interface{}) (*Node, int) {
+func PrettyPrint(w io.Writer, n *Node, inter interface{}) *Node {
 	switch v := n.Elem.(type) {
 	case xml.StartElement:
 		io.WriteString(w, "<"+v.Name.Local)
@@ -46,5 +46,5 @@ func PrettyPrint(w io.Writer, n *Node, depth int, inter interface{}) (*Node, int
 	default:
 		fmt.Printf("svg/xml: printNode: unknown type: %#v\n", v)
 	}
-	return n, depth
+	return n
 }
