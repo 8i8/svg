@@ -2,22 +2,18 @@ all:
 	clear
 	-rm run
 	go build -o run cmd/main.go
-	./run assets/chart.svg
+	./run assets/test.svg
 
-fire:
+ff:
 	clear
 	-rm run
+	-rm temp.svg
 	go build -o run cmd/main.go
-	./run assets/fire.icon.120.svg
-
-next:
-	clear
-	-rm run
-	go build -o run cmd/main.go
-	./run assets/test
+	./run assets/test.svg > temp.svg
+	firefox temp.svg
 
 debug:
 	clear
 	-rm run
 	go build -o run cmd/main.go
-	dlv debug cmd/main.go -- test
+	dlv debug cmd/main.go -- assets/test.svg
