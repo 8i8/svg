@@ -41,25 +41,15 @@ func Default(in io.ReadCloser) {
 	//_ = Parse(in)
 	root := Parse(in)
 	// node := &Node{}
-	// root.Iterate(os.Stdout, getElemByID(node, "test"))
-	// if node != nil {
-	// 	elem, ok := node.Elem.(xml.StartElement)
-	// 	if !ok {
-	// 		log.Fatal("svg.Default: xml.StartElement !ok")
-	// 	}
-	// 	var found bool
-	// 	for i, a := range elem.Attr {
-	// 		if a.Name.Local == "fill" {
-	// 			elem.Attr[i].Value = "blue"
-	// 		}
-	// 		if !found {
-	// 			elem.Attr = append(elem.Attr, xml.Attr{
-	// 				Name:  xml.Name{Local: "fill"},
-	// 				Value: "blue"})
+	// root.Iterate(os.Stdout, getElemByID(node, "path40096"))
+	// if e, ok := node.Elem.(xml.StartElement); ok {
+	// 	e := e
+	// 	for i, a := range e.Attr {
+	// 		if a.Name.Local == "style" {
+	// 			e.Attr[i].Value = "display:inline;fill:#ffffff;fill-opacity:1;stroke:#ff00ff;stroke-opacity:1"
 	// 		}
 	// 	}
-	// 	root.Iterate(os.Stdout, insertElemById(node, "test"))
-	// 	fmt.Printf("%v\n", node)
+	// 	node.Elem = e
 	// }
 	root.Iterate(os.Stdout, PrettyPrint)
 }
