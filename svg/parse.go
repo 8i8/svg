@@ -1,8 +1,10 @@
 package svg
 
 import (
+	"bytes"
 	"fmt"
 	"io"
+	"regexp"
 	"svg/svg/xml"
 )
 
@@ -28,8 +30,8 @@ func (p *parser) init() {
 	p.head = new(head)
 }
 
-// CopyNode returns a copy of the given node.
-func CopyNode(t xml.Token) (node xml.Token) {
+// copyNode returns a copy of the given node.
+func copyNode(t xml.Token) (node xml.Token) {
 	switch v := t.(type) {
 	case xml.StartElement:
 		return v.Copy()
@@ -76,7 +78,22 @@ func (p *parser) nestNode(v xml.Token) {
 	p.current = &(*p.current).FirstChild
 }
 
-// parseToken generates a parse tree from the tokens that it recieves.
+var blankLine = regexp.MustCompile("\n\n")
+
+// hasData strips out all CharData which contain only whitespace,
+// removing unneeded text formating nodes from the parse tree.
+func hasData(n xml.CharData) int {
+	// buf := blankLine.Find(n)
+	// if buf != nil {
+	// 	return 2
+	// }
+	if buf := bytes.Trim([]byte(n), "\n\t\v\r "); len(buf) > 0 {
+		return 1
+	}
+	return 0
+}
+
+// parseToken generates a parse tree from the tokens that it receives.
 //
 // element types:
 //	StartElement
@@ -111,9 +128,15 @@ func (p *parser) parseToken(t, n xml.Token) {
 			fmt.Println("EndElement:", v.Name.Local)
 		}
 	case xml.CharData:
-		p.addNode(v.Copy())
-		if verbose {
-			fmt.Printf("CharData: %#v\n", v)
+		if i := hasData(v); i > 0 {
+			if i == 1 {
+				p.addNode(v.Copy())
+			} else if i == 2 {
+				p.addNode(xml.CharData{'\n'})
+			}
+			if verbose {
+				fmt.Printf("CharData: %#v\n", v)
+			}
 		}
 	case xml.Comment:
 		p.addNode(v.Copy())
@@ -145,20 +168,22 @@ func (p *parser) parse(in io.Reader) *Node {
 
 	token, err = d.Token()
 	if err != nil {
-		fmt.Println("svg/svg:", err)
+		fmt.Println("svg/svg: parse:", err)
 		return nil
 	}
+	token = copyNode(token)
+
 	for {
 		next, err = d.Token()
 		if err == io.EOF {
 			p.parseToken(token, next)
 			break
 		} else if err != nil {
-			fmt.Println("svg/svg:", err)
+			fmt.Println("svg/svg: parse:", err)
 			continue
 		}
 		p.parseToken(token, next)
-		token = CopyNode(next)
+		token = copyNode(next)
 	}
 	return p.head.node
 }

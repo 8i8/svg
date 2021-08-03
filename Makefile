@@ -1,19 +1,22 @@
 all:
 	clear
-	-rm run
-	go build -o run cmd/main.go
-	./run assets/test.svg
+	go run cmd/main.go -- assets/test.svg > temp.svg
+
+car:
+	clear
+	go run cmd/main.go -- assets/car.svg > temp.svg
+
+anim:
+	clear
+	go run cmd/main.go -- assets/scimitar-anim.svg > temp.svg
 
 ff:
 	clear
-	-rm run
-	-rm temp.svg
-	go build -o run cmd/main.go
-	./run assets/test.svg > temp.svg
+	go run cmd/main.go -- assets/car.svg > temp.svg
 	firefox temp.svg
 
 debug:
 	clear
 	-rm run
 	go build -o run cmd/main.go
-	dlv debug cmd/main.go -- assets/test.svg
+	dlv debug cmd/main.go -- assets/short.svg
