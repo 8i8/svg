@@ -12,14 +12,20 @@ import (
 // for browsers.
 func nameSpaceToken(str string) string {
 	switch str {
-	case "http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd":
-		return "sodipodi"
-	case "http://www.inkscape.org/namespaces/inkscape":
-		return "inkscape"
 	case "http://www.w3.org/XML/1998/namespace":
 		return "xml"
 	case "http://www.w3.org/1999/xlink":
 		return "xlink"
+	case "http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd":
+		return "sodipodi"
+	case "http://www.inkscape.org/namespaces/inkscape":
+		return "inkscape"
+	case "http://www.w3.org/1999/02/22-rdf-syntax-ns#":
+		return "rdf"
+	case "ttp://www.w3.org/2000/01/rdf-schema#":
+		return "rdfs"
+	case "http://xmlns.com/foaf/0.1/":
+		return "foaf"
 	default:
 		return str
 	}
