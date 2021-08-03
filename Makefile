@@ -6,6 +6,10 @@ car:
 	clear
 	go run cmd/main.go -- assets/car.svg > temp.svg
 
+car2:
+	clear
+	go run cmd/main.go -- assets/tommek_Car.svg > temp.svg
+
 anim:
 	clear
 	go run cmd/main.go -- assets/scimitar-anim.svg > temp.svg
