@@ -82,15 +82,11 @@ var blankLine = regexp.MustCompile("\n\n")
 
 // hasData strips out all CharData which contain only whitespace,
 // removing unneeded text formating nodes from the parse tree.
-func hasData(n xml.CharData) int {
-	// buf := blankLine.Find(n)
-	// if buf != nil {
-	// 	return 2
-	// }
+func hasData(n xml.CharData) bool {
 	if buf := bytes.Trim([]byte(n), "\n\t\v\r "); len(buf) > 0 {
-		return 1
+		return true
 	}
-	return 0
+	return false
 }
 
 // parseToken generates a parse tree from the tokens that it receives.
@@ -128,12 +124,8 @@ func (p *parser) parseToken(t, n xml.Token) {
 			fmt.Println("EndElement:", v.Name.Local)
 		}
 	case xml.CharData:
-		if i := hasData(v); i > 0 {
-			if i == 1 {
-				p.addNode(v.Copy())
-			} else if i == 2 {
-				p.addNode(xml.CharData{'\n'})
-			}
+		if hasData(v) {
+			p.addNode(v.Copy())
 			if verbose {
 				fmt.Printf("CharData: %#v\n", v)
 			}
