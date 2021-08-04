@@ -1,10 +1,8 @@
 package svg
 
 import (
-	"bytes"
 	"fmt"
 	"io"
-	"regexp"
 	"svg/svg/xml"
 )
 
@@ -78,14 +76,12 @@ func (p *parser) nestNode(v xml.Token) {
 	p.current = &(*p.current).FirstChild
 }
 
-var blankLine = regexp.MustCompile("\n\n")
-
 // hasData strips out all CharData which contain only whitespace,
 // removing unneeded text formating nodes from the parse tree.
 func hasData(n xml.CharData) bool {
-	if buf := bytes.Trim([]byte(n), "\n\t\v\r "); len(buf) > 0 {
-		return true
-	}
+	// if buf := bytes.TrimLeft([]byte(n), "\n\t\v\r "); len(buf) > 0 {
+	// 	return true
+	// }
 	return false
 }
 

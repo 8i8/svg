@@ -44,7 +44,7 @@ func checkElem(name string) bool {
 	}
 }
 
-func exceptions(w io.Writer, n *Node) bool {
+func prevNotCharData(w io.Writer, n *Node) bool {
 	if n.PrevSibling != nil {
 		if _, ok := n.PrevSibling.Elem.(xml.CharData); ok {
 			return false
@@ -68,7 +68,8 @@ func newLine(w io.Writer) {
 func PrettyPrint(w io.Writer, n *Node, d int) (*Node, int) {
 	switch v := n.Elem.(type) {
 	case xml.StartElement:
-		indentation(w, d)
+		// TODO Display bug is caused by this indentation call.
+		//indentation(w, d)
 		// Name
 		io.WriteString(w, "<"+v.Name.Local)
 
@@ -88,8 +89,8 @@ func PrettyPrint(w io.Writer, n *Node, d int) (*Node, int) {
 		}
 		d-- // Decrement nesting.
 
-		// If there is no next sibling then this is the end of a
-		// StartElement mid flow and we need to close it.
+		// If there is no next sibling we need to close the tag
+		// and indent.
 		if n.NextSibling == nil {
 			io.WriteString(w, ">")
 			newLine(w)
@@ -119,7 +120,8 @@ func PrettyPrint(w io.Writer, n *Node, d int) (*Node, int) {
 		newLine(w)
 	case xml.EndElement:
 		d--
-		if exceptions(w, n) {
+		if prevNotCharData(w, n) {
+			// TODO Display bug is caused by this indentation call.
 			indentation(w, d)
 		}
 		io.WriteString(w, "</"+v.Name.Local+">")
