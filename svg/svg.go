@@ -8,32 +8,32 @@ import (
 )
 
 func getElemByID(node *Node, id string) IterFunc {
-	return func(w io.Writer, n *Node, d int) (*Node, int) {
+	return func(w io.Writer, i *iterator, n *Node) *Node {
 		elem, ok := n.Elem.(xml.StartElement)
 		if !ok {
-			return n, d
+			return n
 		}
 		for _, attr := range elem.Attr {
 			if attr.Name.Local == "id" && attr.Value == id {
 				*node = *n
 			}
 		}
-		return n, d
+		return n
 	}
 }
 
 func insertElemById(node *Node, id string) IterFunc {
-	return func(w io.Writer, n *Node, d int) (*Node, int) {
+	return func(w io.Writer, i *iterator, n *Node) *Node {
 		elem, ok := n.Elem.(xml.StartElement)
 		if !ok {
-			return n, d
+			return n
 		}
 		for _, attr := range elem.Attr {
 			if attr.Name.Local == "id" && attr.Value == id {
 				*n = *node
 			}
 		}
-		return n, d
+		return n
 	}
 }
 

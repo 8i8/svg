@@ -65,7 +65,7 @@ func newLine(w io.Writer) {
 	io.WriteString(w, "\n")
 }
 
-func PrettyPrint(w io.Writer, n *Node, d int) (*Node, int) {
+func PrettyPrint(w io.Writer, i *iterator, n *Node) *Node {
 	switch v := n.Elem.(type) {
 	case xml.StartElement:
 		// TODO Display bug is caused by this indentation call.
@@ -74,10 +74,10 @@ func PrettyPrint(w io.Writer, n *Node, d int) (*Node, int) {
 		io.WriteString(w, "<"+v.Name.Local)
 
 		// Attributes.
-		d++ // Augment nesting.
+		i.depth++ // Augment nesting.
 		for _, a := range v.Attr {
 			newLine(w)
-			indentation(w, d)
+			indentation(w, i.depth)
 			// Name spaces.
 			if a.Name.Space != "" {
 				io.WriteString(w, nameSpaceToken(a.Name.Space)+":"+
@@ -87,15 +87,15 @@ func PrettyPrint(w io.Writer, n *Node, d int) (*Node, int) {
 			}
 			io.WriteString(w, a.Value+"\"")
 		}
-		d-- // Decrement nesting.
+		i.depth-- // Decrement nesting.
 
 		// If there is no next sibling we need to close the tag
 		// and indent.
 		if n.NextSibling == nil {
 			io.WriteString(w, ">")
 			newLine(w)
-			d++
-			return n, d
+			i.depth++
+			return n
 		}
 
 		// If there is a next sibling then this must be an
@@ -103,51 +103,51 @@ func PrettyPrint(w io.Writer, n *Node, d int) (*Node, int) {
 		if _, ok := n.NextSibling.Elem.(xml.EndElement); ok {
 			io.WriteString(w, " />")
 			newLine(w)
-			return n.NextSibling, d
+			return n.NextSibling
 		}
 
 		// We have arrived end of the open element tag and need
 		// to close it as the next tag will be nested, if the
 		// next tag is CharData then skip the new line char.
-		d++
+		i.depth++
 		if n.NextSibling != nil {
 			if _, ok := n.NextSibling.Elem.(xml.CharData); ok {
 				io.WriteString(w, ">")
-				return n, d
+				return n
 			}
 		}
 		io.WriteString(w, ">")
 		newLine(w)
 	case xml.EndElement:
-		d--
+		i.depth--
 		if prevNotCharData(w, n) {
 			// TODO Display bug is caused by this indentation call.
-			indentation(w, d)
+			indentation(w, i.depth)
 		}
 		io.WriteString(w, "</"+v.Name.Local+">")
 		newLine(w)
 	case xml.CharData:
 		w.Write([]byte(v))
 	case xml.Comment:
-		indentation(w, d)
+		indentation(w, i.depth)
 		io.WriteString(w, "<!--")
 		w.Write([]byte(v))
 		io.WriteString(w, "-->")
 		newLine(w)
 	case xml.ProcInst:
-		indentation(w, d)
+		indentation(w, i.depth)
 		io.WriteString(w, "<?"+v.Target+" ")
 		w.Write(v.Inst)
 		io.WriteString(w, "?>")
 		newLine(w)
 	case xml.Directive:
-		indentation(w, d)
+		indentation(w, i.depth)
 		w.Write(v)
 		newLine(w)
 	default:
 		fmt.Printf("svg/xml: printNode: unknown type: %#v\n", v)
 	}
-	return n, d
+	return n
 }
 
 func tabIndent(n int) []byte {
