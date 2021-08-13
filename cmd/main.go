@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"io"
 	"log"
@@ -27,12 +28,19 @@ func inputStream(args []string) (io.ReadCloser, error) {
 	return f, nil
 }
 
+var pause = false
+
 func main() {
 
 	// Setup.
-	c, err := conf.Config()
+	c, err := conf.Configure()
 	if err != nil {
 		log.Fatal(err)
+	}
+
+	if pause {
+		scanner := bufio.NewScanner(os.Stdin)
+		scanner.Scan()
 	}
 
 	// Input stream.
@@ -44,8 +52,8 @@ func main() {
 	// Running mode.
 	switch c.Cmd() {
 	case conf.Default:
-		svg.Default(in)
+		svg.Default(in, c)
 	case conf.Open:
-		svg.Open(in)
+		svg.Open(in, c)
 	}
 }

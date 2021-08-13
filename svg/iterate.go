@@ -5,7 +5,7 @@ import (
 )
 
 // IterFunc is the function called upon each iteration of the iterator.
-type IterFunc func(io.Writer, *iterator, *Node) *Node
+type IterFunc func(*iterator, *Node) *Node
 
 type stack []string
 
@@ -14,40 +14,60 @@ func (s *stack) add(str string) {
 }
 
 func (s *stack) pop() (str string) {
-	st := *s
-	if len(st) == 0 {
+	if len(*s) == 0 {
 		return ""
 	}
-	str = st[len(st)-1]
-	*s = st[:len(st)-1]
+	str = (*s)[len(*s)-1]
+	*s = (*s)[:len(*s)-1]
 	return
 }
 
-type iterator struct {
-	stack
-	depth int
-	fn    IterFunc
+func (s *stack) peek() (str string) {
+	if len(*s) == 0 {
+		return ""
+	}
+	return (*s)[len(*s)-1]
 }
 
-func (i *iterator) iterate(w io.Writer, n *Node) {
+type iterator struct {
+	// the iterator writes to this ouput.
+	w io.Writer
+	// stack maintains state by preserving a last in first out
+	// record of the tag names whist nesting.
+	stack
+	// depth holds the current indentation depth of the iterator.
+	depth int
+	// Fn is called upon each iteration.
+	fn IterFunc
+	// buffer for indentation characters.
+	indent []byte
+	// the indentation that is to be used.
+	ichar string
+}
+
+func (i *iterator) iterate(n *Node) {
+
+	if n == nil {
+		panic("expected to recieve a valid node")
+	}
 
 	// Work to be done.
 	if i.fn != nil {
-		n = i.fn(w, i, n)
+		n = i.fn(i, n)
 	}
 
 	// Nested elements.
 	if n.FirstChild != nil {
-		i.iterate(w, n.FirstChild)
+		i.iterate(n.FirstChild)
 	}
 
 	// Siblings.
 	if n.NextSibling != nil {
-		i.iterate(w, n.NextSibling)
+		i.iterate(n.NextSibling)
 	}
 }
 
 func (n *Node) Iterate(w io.Writer, fn IterFunc) {
-	i := iterator{make(stack, 0, 10), 0, fn}
-	i.iterate(w, n)
+	i := iterator{w, make(stack, 10), 0, fn, make([]byte, 10), "\t"}
+	i.iterate(n)
 }

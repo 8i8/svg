@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"strings"
 	"svg/svg/xml"
 )
 
@@ -31,78 +32,92 @@ func nameSpaceToken(str string) string {
 	}
 }
 
-func stripIndenting(v xml.CharData) []byte {
-	return bytes.Trim([]byte(v), "\v\r\t ")
+func (i iterator) indentation() {
+	if str := i.peek(); !processingText(str) {
+		if cap(i.indent) < i.depth*len(i.ichar) {
+			i.indent = make([]byte, i.depth*len(i.ichar))
+		}
+		i.indent = i.indent[:0]
+		for n := 0; n < i.depth; n++ {
+			i.indent = append(i.indent, i.ichar...)
+		}
+		i.w.Write(i.indent)
+	}
 }
 
-func checkElem(name string) bool {
-	switch name {
-	case "text", "tspan", "/tspan":
+func processingText(str string) bool {
+	switch str {
+	case "text", "tspan":
 		return true
 	default:
 		return false
 	}
 }
 
-func prevNotCharData(w io.Writer, n *Node) bool {
-	if n.PrevSibling != nil {
-		if _, ok := n.PrevSibling.Elem.(xml.CharData); ok {
-			return false
-		}
+func insideToken(str string) bool {
+	if strings.Contains(str, "-token") {
+		return true
 	}
-	return true
+	return false
 }
 
-func indentation(w io.Writer, n int) {
-	buf := make([]byte, n, n)
-	for i := 0; i < n; i++ {
-		buf[i] = '\t'
+func (i iterator) newLineInToken() {
+	if str := i.peek(); insideToken(str) {
+		io.WriteString(i.w, "\n")
 	}
-	w.Write(buf)
 }
 
-func newLine(w io.Writer) {
-	io.WriteString(w, "\n")
+func (i iterator) copyFormatNewLine(c xml.CharData) {
+	n := bytes.Count([]byte(c), []byte("\n"))
+	for n > 0 {
+		io.WriteString(i.w, "\n")
+		n--
+	}
 }
 
-func PrettyPrint(w io.Writer, i *iterator, n *Node) *Node {
+func PrettyPrint(i *iterator, n *Node) *Node {
 	switch v := n.Elem.(type) {
 	case xml.StartElement:
+
 		// TODO Display bug is caused by this indentation call.
-		//indentation(w, d)
+		i.indentation()
+
 		// Name
-		io.WriteString(w, "<"+v.Name.Local)
+		io.WriteString(i.w, "<"+v.Name.Local)
+		i.add(v.Name.Local)
+		i.add(v.Name.Local + "-token")
 
 		// Attributes.
 		i.depth++ // Augment nesting.
 		for _, a := range v.Attr {
-			newLine(w)
-			indentation(w, i.depth)
+			i.newLineInToken()
+			i.indentation()
 			// Name spaces.
 			if a.Name.Space != "" {
-				io.WriteString(w, nameSpaceToken(a.Name.Space)+":"+
+				io.WriteString(i.w, nameSpaceToken(a.Name.Space)+":"+
 					a.Name.Local+"=\"")
 			} else {
-				io.WriteString(w, a.Name.Local+"=\"")
+				io.WriteString(i.w, a.Name.Local+"=\"")
 			}
-			io.WriteString(w, a.Value+"\"")
+			io.WriteString(i.w, a.Value+"\"")
 		}
+		i.pop()
 		i.depth-- // Decrement nesting.
 
 		// If there is no next sibling we need to close the tag
 		// and indent.
 		if n.NextSibling == nil {
-			io.WriteString(w, ">")
-			newLine(w)
+			io.WriteString(i.w, ">")
 			i.depth++
 			return n
 		}
 
 		// If there is a next sibling then this must be an
-		// element with an intigrated end tag.
+		// element with an intigrated end tag, remove the tag
+		// from the stack closing its state.
 		if _, ok := n.NextSibling.Elem.(xml.EndElement); ok {
-			io.WriteString(w, " />")
-			newLine(w)
+			io.WriteString(i.w, " />")
+			i.pop()
 			return n.NextSibling
 		}
 
@@ -110,40 +125,36 @@ func PrettyPrint(w io.Writer, i *iterator, n *Node) *Node {
 		// to close it as the next tag will be nested, if the
 		// next tag is CharData then skip the new line char.
 		i.depth++
-		if n.NextSibling != nil {
-			if _, ok := n.NextSibling.Elem.(xml.CharData); ok {
-				io.WriteString(w, ">")
-				return n
-			}
-		}
-		io.WriteString(w, ">")
-		newLine(w)
+		io.WriteString(i.w, ">")
+
 	case xml.EndElement:
 		i.depth--
-		if prevNotCharData(w, n) {
-			// TODO Display bug is caused by this indentation call.
-			indentation(w, i.depth)
-		}
-		io.WriteString(w, "</"+v.Name.Local+">")
-		newLine(w)
+		i.indentation()
+		io.WriteString(i.w, "</"+v.Name.Local+">")
+		i.pop()
+
 	case xml.CharData:
-		w.Write([]byte(v))
+		if processingText(i.peek()) {
+			i.w.Write([]byte(v))
+		} else {
+			i.copyFormatNewLine(v)
+		}
+
 	case xml.Comment:
-		indentation(w, i.depth)
-		io.WriteString(w, "<!--")
-		w.Write([]byte(v))
-		io.WriteString(w, "-->")
-		newLine(w)
+		i.indentation()
+		io.WriteString(i.w, "<!--")
+		i.w.Write([]byte(v))
+		io.WriteString(i.w, "-->")
+
 	case xml.ProcInst:
-		indentation(w, i.depth)
-		io.WriteString(w, "<?"+v.Target+" ")
-		w.Write(v.Inst)
-		io.WriteString(w, "?>")
-		newLine(w)
+		i.indentation()
+		io.WriteString(i.w, "<?"+v.Target+" ")
+		i.w.Write(v.Inst)
+		io.WriteString(i.w, "?>")
+
 	case xml.Directive:
-		indentation(w, i.depth)
-		w.Write(v)
-		newLine(w)
+		i.indentation()
+		i.w.Write(v)
 	default:
 		fmt.Printf("svg/xml: printNode: unknown type: %#v\n", v)
 	}

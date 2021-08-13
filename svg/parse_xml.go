@@ -76,15 +76,6 @@ func (p *parser) nestNode(v xml.Token) {
 	p.current = &(*p.current).FirstChild
 }
 
-// hasData strips out all CharData which contain only whitespace,
-// removing unneeded text formating nodes from the parse tree.
-func hasData(n xml.CharData) bool {
-	// if buf := bytes.TrimLeft([]byte(n), "\n\t\v\r "); len(buf) > 0 {
-	// 	return true
-	// }
-	return false
-}
-
 // parseToken generates a parse tree from the tokens that it receives.
 //
 // element types:
@@ -120,11 +111,9 @@ func (p *parser) parseToken(t, n xml.Token) {
 			fmt.Println("EndElement:", v.Name.Local)
 		}
 	case xml.CharData:
-		if hasData(v) {
-			p.addNode(v.Copy())
-			if verbose {
-				fmt.Printf("CharData: %#v\n", v)
-			}
+		p.addNode(v.Copy())
+		if verbose {
+			fmt.Printf("CharData: %#v\n", v)
 		}
 	case xml.Comment:
 		p.addNode(v.Copy())
