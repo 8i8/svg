@@ -12,19 +12,24 @@ func _() {
 	_ = x[ItemSyntaxError-1]
 	_ = x[ItemToken-2]
 	_ = x[ItemColon-3]
-	_ = x[ItemSemiColon-4]
-	_ = x[ItemColour-5]
-	_ = x[ItemAttribute-6]
-	_ = x[ItemNumber-7]
-	_ = x[ItemUnit-8]
-	_ = x[ItemText-9]
-	_ = x[ItemWhitespace-10]
-	_ = x[ItemEOF-11]
+	_ = x[ItemDot-4]
+	_ = x[ItemOpenBracket-5]
+	_ = x[ItemCloseBracket-6]
+	_ = x[ItemSemiColon-7]
+	_ = x[ItemComma-8]
+	_ = x[ItemHEXColour-9]
+	_ = x[ItemRGBColour-10]
+	_ = x[ItemAttribute-11]
+	_ = x[ItemNumber-12]
+	_ = x[ItemUnit-13]
+	_ = x[ItemText-14]
+	_ = x[ItemWhitespace-15]
+	_ = x[ItemEOF-16]
 }
 
-const _itemType_name = "ItemErrorItemSyntaxErrorItemTokenItemColonItemSemiColonItemColourItemAttributeItemNumberItemUnitItemTextItemWhitespaceItemEOF"
+const _itemType_name = "ItemErrorItemSyntaxErrorItemTokenItemColonItemDotItemOpenBracketItemCloseBracketItemSemiColonItemCommaItemHEXColourItemRGBColourItemAttributeItemNumberItemUnitItemTextItemWhitespaceItemEOF"
 
-var _itemType_index = [...]uint8{0, 9, 24, 33, 42, 55, 65, 78, 88, 96, 104, 118, 125}
+var _itemType_index = [...]uint8{0, 9, 24, 33, 42, 49, 64, 80, 93, 102, 115, 128, 141, 151, 159, 167, 181, 188}
 
 func (i itemType) String() string {
 	if i < 0 || i >= itemType(len(_itemType_index)-1) {

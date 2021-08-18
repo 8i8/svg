@@ -10,33 +10,22 @@ import (
 const (
 	// -1 cannot possible arrive in the input string, as such it is
 	// safe for use as an EOF character.
-	eof       = -1
-	leftMeta  = "<" // Left and right meta are the tags that will.
-	rightMeta = ">" // tell the scanner that it is within a token.
-	alphabet  = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_"
-	wspace    = " \t\v"
-	hex       = "0123456789abcdefABCDEF"
-	digits    = "0123456789"
-	units     = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz%"
+	eof        = -1
+	leftMeta   = "<" // Left and right meta are the tags that will.
+	rightMeta  = ">" // tell the scanner that it is within a token.
+	alphabet   = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_"
+	wspace     = " \t\v"
+	hex        = "0123456789abcdefABCDEF"
+	digits     = "0123456789."
+	units      = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz%"
+	whitespace = "\t\n\v\f\r "
 )
 
 type messager struct {
 	send chan Item
 	stop chan Item
-	//back chan Item
-	run bool
+	run  bool
 }
-
-// // get returns the next available Item from the mesager channels, if
-// // there is an Item in the back buffer it will return that first.
-// func (m messager) get() Item {
-// 	select {
-// 	case out := <-m.back:
-// 		return out
-// 	case out := <-m.send:
-// 		return out
-// 	}
-// }
 
 // Lexer holds the state of the scanner.
 type Lexer struct {
@@ -46,6 +35,7 @@ type Lexer struct {
 	start int      // start position of this item.
 	pos   int      // current position in the input.
 	width int      // width of last rune read.
+	count int      // counts variables between brackets.
 	lex   messager // channels for messaging the lexer.
 	anlz  messager // channels for messaging the anylyzer.
 }
@@ -203,8 +193,13 @@ const (
 	ItemSyntaxError
 	ItemToken
 	ItemColon
+	ItemDot
+	ItemOpenBracket
+	ItemCloseBracket
 	ItemSemiColon
-	ItemColour
+	ItemComma
+	ItemHEXColour
+	ItemRGBColour
 	ItemAttribute
 	ItemNumber
 	ItemUnit
@@ -258,21 +253,37 @@ func (i Item) String() string {
 type stateFn func(*Lexer) stateFn
 
 func startLexer(l *Lexer) stateFn {
+	const fname = "startLexer"
 	switch l.elem {
 	case "path":
 		return startPath(l)
+	case "text":
+		return startPath(l)
 	}
-	return l.errorf("unknown element: %s", l.elem)
+	return l.errorf("%s: %s: %q: unknown element",
+		fname, l.elem, l.attr)
 }
 
 func startPath(l *Lexer) stateFn {
+	const fname = "startPath"
 	switch l.attr {
 	case "d":
 		return lexPathD
 	case "style":
 		return lexStyle
 	}
-	return l.errorf("unknown path element: %s", l.attr)
+	return l.errorf("%s: %s: %q: unknown attribute",
+		fname, l.elem, l.attr)
+}
+
+func startText(l *Lexer) stateFn {
+	const fname = "startText"
+	switch l.attr {
+	case "font-family":
+		return lexStyle
+	}
+	return l.errorf("%s: %s: %q: unknown attribute",
+		fname, l.elem, l.attr)
 }
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -315,16 +326,32 @@ func lexStyle(l *Lexer) stateFn {
 		case r == ':':
 			l.emit(ItemColon)
 			return lexStyle
+		case r == '(':
+			l.emit(ItemOpenBracket)
+			return lexStyle
+		case r == ')':
+			l.emit(ItemCloseBracket)
+			return lexStyle
+		case r == ',':
+			l.emit(ItemComma)
+			return lexStyle
 		case r == ';':
 			l.emit(ItemSemiColon)
 			return lexStyle
 		case r == '#':
 			l.acceptRun(hex)
-			l.emit(ItemColour)
+			l.emit(ItemHEXColour)
 			return lexStyle
 		case unicode.IsNumber(r):
 			l.backup()
 			return lexValue(lexStyle)
+		case r == '\'':
+			lexQuotes(lexStyle)
+		case r == '"':
+			lexDoubleQuotes(lexStyle)
+		case r == 'r':
+			l.backup()
+			return lexRGB(lexStyle)
 		case unicode.IsLetter(r):
 			l.backup()
 			return lexWord(lexStyle)
@@ -345,6 +372,28 @@ func lexWord(next stateFn) stateFn {
 	}
 }
 
+func lexQuotes(next stateFn) stateFn {
+	return func(l *Lexer) stateFn {
+		l.acceptRun(alphabet + " ")
+		if !l.accept("'") {
+			return l.errorf("expected a closing quote")
+		}
+		l.emit(ItemText)
+		return next
+	}
+}
+
+func lexDoubleQuotes(next stateFn) stateFn {
+	return func(l *Lexer) stateFn {
+		l.acceptRun(alphabet + " ")
+		if !l.accept("\"") {
+			return l.errorf("expected a closing quote")
+		}
+		l.emit(ItemText)
+		return next
+	}
+}
+
 func lexValue(next stateFn) stateFn {
 	return func(l *Lexer) stateFn {
 		l.acceptRun(digits)
@@ -359,8 +408,22 @@ func lexValue(next stateFn) stateFn {
 
 func lexSpace(next stateFn) stateFn {
 	return func(l *Lexer) stateFn {
-		l.accept(string([]byte{'\t', '\n', '\v', '\f', '\r', ' ', 0x85, 0xA0}))
+		l.acceptRun(whitespace)
 		l.emit(ItemWhitespace)
 		return next
+	}
+}
+
+func lexRGB(next stateFn) stateFn {
+	return func(l *Lexer) stateFn {
+		start := l.start
+		l.acceptRun("rgbRGB")
+		if l.input[l.start:l.pos] == "rgb" ||
+			l.input[l.start:l.pos] == "RGB" {
+			l.emit(ItemRGBColour)
+			return next
+		}
+		l.start, l.pos, l.width = start, start, 0
+		return lexWord(next)
 	}
 }

@@ -1,9 +1,18 @@
 package lex
 
-import "fmt"
+import (
+	"fmt"
+	"svg/svg/attr/lex/set"
+)
 
-const verbose = true
+const verbose = false
+const (
+	rgbVarCount = 3
+)
 
+// analyze is the syntactic analysis listening loop that advances the
+// function states one by one, that can be canceled by sending to the
+// stop channel.
 func (l *Lexer) analyze(fn stateFn) {
 	l.anlz.run = true
 	for state := fn; state != nil; {
@@ -17,66 +26,72 @@ func (l *Lexer) analyze(fn stateFn) {
 	l.anlz.run = false
 }
 
+// startAnalysis is the entry point for each analysis path, specific to
+// each SVG element type.
 func startAnalysis(l *Lexer) stateFn {
 	switch l.elem {
 	case "path":
 		switch l.attr {
 		case "style":
-			return anlzStyle
+			return anlzAttrKey
 		}
 	case "text":
+		switch l.attr {
+		case "style":
+			return anlzAttrKey
+		}
 	}
 	return nil
 }
 
-func attrType(l *Lexer, key string) (fn stateFn) {
-	switch l.attr {
-	case "style":
-		switch key {
-		case "fill":
-			return anlzColon(anlzWord(anlzSemiColon(anlzStyle)))
-		case "stroke-width":
-			return anlzColon(anlzNumber(anlzUnit(anlzSemiColon(anlzStyle))))
-		case "stroke":
-			return anlzColon(anlzColour(anlzSemiColon(anlzStyle)))
-		}
+// attributeType sets an attribute specific expression en route.
+func attributeType(l *Lexer, key string) (fn stateFn) {
+	switch l.elem {
+	case "path":
+		return pathAttr(l, key)
+	case "text":
+		return textAttr(l, key)
 	}
 	const msg = "unknown type"
 	return l.syntaxErrorf("%s: %s: %s: %q", l.elem, l.attr, msg, key)
 }
 
-func anlzStyleWrap(next stateFn) stateFn {
-	return func(l *Lexer) stateFn {
-		return next
-		t := <-l.anlz.send
-		if t.Type == ItemEOF {
-			l.anlz.send <- t
-			return anlzEOF
-		}
-		if t.Type == ItemWhitespace {
-			l.anlz.send <- t
-			return anlzStyle
-		}
-		if t.Type == ItemText {
-			l.anlz.send <- t
-			return attrType(l, t.Value)
-		}
-		const msg = "attribute key error"
-		return l.syntaxErrorf("%s: %s: %s: %s(%s)",
-			l.elem, l.attr, msg, t.Type, t.Value)
+func pathAttr(l *Lexer, key string) (fn stateFn) {
+	switch key {
+	case "fill":
+		return anlzColon(anlzWord(anlzSemiColon(anlzAttrKey)))
+	case "stroke-width":
+		return anlzColon(anlzNumber(anlzUnit(anlzSemiColon(anlzAttrKey))))
+	case "stroke":
+		return anlzColon(anlzColour(anlzSemiColon(anlzAttrKey)))
 	}
+	const msg = "unknown attribute"
+	return l.syntaxErrorf("%s: %s: %s: %q", l.elem, l.attr, msg, key)
 }
 
-func anlzStyle(l *Lexer) stateFn {
+func textAttr(l *Lexer, key string) (fn stateFn) {
+	switch key {
+	case "font-family":
+		//return anlzFontFamily(nil)
+		return nil
+	case "font":
+		return
+	}
+	const msg = "unknown attribute"
+	return l.syntaxErrorf("%s: %s: %s: %q", l.elem, l.attr, msg, key)
+}
+
+// anlzAttrKey is the root expression of the style attribute.
+func anlzAttrKey(l *Lexer) stateFn {
 	t := <-l.anlz.send
 	if verbose {
-		const fname = "anlzStyle"
+		const fname = "anlzAttrKey"
 		fmt.Printf("%s: %s: %s: %s(%s)\n",
 			fname, l.elem, l.attr, t.Type, t.Value)
 	}
 	if t.Type == ItemWhitespace {
 		l.anlz.send <- t
-		return anlzStyle
+		return anlzAttrKey
 	}
 	if t.Type == ItemEOF {
 		l.anlz.send <- t
@@ -84,7 +99,7 @@ func anlzStyle(l *Lexer) stateFn {
 	}
 	if t.Type == ItemText {
 		l.anlz.send <- t
-		return attrType(l, t.Value)
+		return attributeType(l, t.Value)
 	}
 	const msg = "attribute key error"
 	return l.syntaxErrorf("%s: %s: %s: %s(%s)",
@@ -112,6 +127,10 @@ func anlzColon(next stateFn) stateFn {
 func anlzSemiColon(next stateFn) stateFn {
 	return func(l *Lexer) stateFn {
 		t := <-l.anlz.send
+		if t.Type == ItemWhitespace {
+			l.anlz.send <- t
+			return anlzSemiColon(next)
+		}
 		if verbose {
 			const fname = "anlzSemiColon"
 			fmt.Printf("%s: %s: %s: %s(%s)\n",
@@ -155,6 +174,10 @@ func anlzWord(next stateFn) stateFn {
 func anlzNumber(next stateFn) stateFn {
 	return func(l *Lexer) stateFn {
 		t := <-l.anlz.send
+		if t.Type == ItemComma {
+			l.anlz.send <- t
+			return anlzNumber(next)
+		}
 		if t.Type == ItemWhitespace {
 			l.anlz.send <- t
 			return anlzNumber(next)
@@ -192,7 +215,7 @@ func anlzUnit(next stateFn) stateFn {
 				}
 				return next
 			}
-			if unitCheck[t.Value] {
+			if set.UnitCheck[t.Value] {
 				l.anlz.send <- t
 				if verbose {
 					const fname = "anlzUnit"
@@ -212,44 +235,118 @@ func anlzUnit(next stateFn) stateFn {
 	}
 }
 
-// func anlzWhitespace(next stateFn) stateFn {
-// 	return func(l *Lexer) stateFn {
-// 		t := l.anlz.get()
-// 		// If there is any whitespace, account for it.
-// 		if t.Type == ItemWhitespace {
-// 			if verbose {
-// 				const fname = "anlzWhitespace"
-// 				fmt.Printf("%s: %s: %s: %s(%s)\n",
-// 					fname, l.elem, l.attr, t.Type, t.Value)
-// 			}
-// 			l.anlz.send <- t
-// 			return next
-// 		}
-// 		// If there was no whitespace, put the token back onto
-// 		// the channel.
-// 		l.anlz.back <- t
-// 		if verbose {
-// 			const fname = "anlzWhitespace sending back"
-// 			fmt.Printf("%s: %s: %s: %s(%s)\n",
-// 				fname, l.elem, l.attr, t.Type, t.Value)
-// 		}
-// 		return next
-// 	}
-// }
-
+// https://www.w3.org/TR/1998/REC-CSS2-19980512/syndata.html#value-def-color
+// https://www.w3.org/Graphics/SVG/1.1/types.html#DataTypeColor
+// https://www.w3.org/Graphics/SVG/1.1/types.html#ColorKeywords
 func anlzColour(next stateFn) stateFn {
 	return func(l *Lexer) stateFn {
 		t := <-l.anlz.send
+		if t.Type == ItemWhitespace {
+			l.anlz.send <- t
+			return anlzColour(next)
+		}
 		if verbose {
 			const fname = "anlzColour"
 			fmt.Printf("%s: %s: %s: %s(%s)\n",
 				fname, l.elem, l.attr, t.Type, t.Value)
 		}
-		if t.Type == ItemColour {
+		if t.Type == ItemHEXColour {
 			l.anlz.send <- t
 			return next
 		}
+		if t.Type == ItemRGBColour {
+			l.anlz.send <- t
+			return anlzOpenBracket(next)
+		}
+		if t.Type == ItemText {
+			if _, ok := set.ColourCheck[t.Value]; ok {
+				l.anlz.send <- t
+				return next
+			} else {
+				const msg = "unknown colour"
+				return l.syntaxErrorf("%s: %s: %s: %s(%s)",
+					l.elem, l.attr, msg, t.Type, t.Value)
+			}
+		}
 		const msg = "expected a colour"
+		return l.syntaxErrorf("%s: %s: %s: %s(%s)",
+			l.elem, l.attr, msg, t.Type, t.Value)
+	}
+}
+
+func anlzOpenBracket(next stateFn) stateFn {
+	return func(l *Lexer) stateFn {
+		t := <-l.anlz.send
+		if verbose {
+			const fname = "anlzOpenBracket"
+			fmt.Printf("%s: %s: %s: %s(%s)\n",
+				fname, l.elem, l.attr, t.Type, t.Value)
+		}
+		if t.Type == ItemOpenBracket {
+			l.anlz.send <- t
+			return anlzRGB(next)
+		}
+		const msg = "expected an open bracket"
+		return l.syntaxErrorf("%s: %s: %s: %s(%s)",
+			l.elem, l.attr, msg, t.Type, t.Value)
+	}
+}
+
+func anlzRGB(next stateFn) stateFn {
+	return func(l *Lexer) stateFn {
+		t := <-l.anlz.send
+		if verbose {
+			const fname = "anlzRGB"
+			fmt.Printf("%s: %s: %s: %s(%s)\n",
+				fname, l.elem, l.attr, t.Type, t.Value)
+		}
+		if t.Type == ItemWhitespace {
+			l.anlz.send <- t
+			return anlzRGB(next)
+		}
+		if t.Type == ItemText {
+			const msg = "expected a number"
+			return l.syntaxErrorf("%s: %s: %s: %s(%s)",
+				l.elem, l.attr, msg, t.Type, t.Value)
+		}
+		if t.Type == ItemNumber && l.count < rgbVarCount-1 {
+			l.anlz.send <- t
+			l.count++
+			return anlzUnit(anlzComma(anlzRGB(next)))
+		}
+		if t.Type >= ItemNumber {
+			l.anlz.send <- t
+			l.count++
+			return anlzUnit(anlzRGB(next))
+		}
+		if t.Type == ItemCloseBracket && l.count == rgbVarCount {
+			l.anlz.send <- t
+			l.count = 0
+			return anlzRGB(next)
+		} else {
+			const msg = "expected 3 variables"
+			return l.syntaxErrorf("%s: %s: %s: %s(%s)",
+				l.elem, l.attr, msg, t.Type, t.Value)
+		}
+		const msg = "expected an rgb colour"
+		return l.syntaxErrorf("%s: %s: %s: %s(%s)",
+			l.elem, l.attr, msg, t.Type, t.Value)
+	}
+}
+
+func anlzComma(next stateFn) stateFn {
+	return func(l *Lexer) stateFn {
+		t := <-l.anlz.send
+		if verbose {
+			const fname = "anlzComma"
+			fmt.Printf("%s: %s: %s: %s(%s)\n",
+				fname, l.elem, l.attr, t.Type, t.Value)
+		}
+		if t.Type == ItemComma {
+			l.anlz.send <- t
+			return next
+		}
+		const msg = "expected a comma"
 		return l.syntaxErrorf("%s: %s: %s: %s(%s)",
 			l.elem, l.attr, msg, t.Type, t.Value)
 	}
