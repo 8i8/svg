@@ -4,9 +4,80 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"os"
 	"strings"
+	"svg/svg/lex"
 	"svg/svg/xml"
 )
+
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ *  Iterator
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+
+// IterFunc is the function called upon each iteration.
+type IterFunc func(*iterator, *Node) *Node
+
+type stack []string
+
+func (s *stack) add(str string) {
+	*s = append(*s, str)
+}
+
+func (s *stack) pop() (str string) {
+	if len(*s) == 0 {
+		return ""
+	}
+	str = (*s)[len(*s)-1]
+	*s = (*s)[:len(*s)-1]
+	return
+}
+
+func (s *stack) peek() (str string) {
+	if len(*s) == 0 {
+		return ""
+	}
+	return (*s)[len(*s)-1]
+}
+
+type iterator struct {
+	// the iterator writes to this output.
+	w io.Writer
+	// stack maintains state by preserving a last in first out
+	// record of the tag names when nesting.
+	stack
+	// depth holds the current indentation depth of the iterator.
+	depth int
+	// fn is called upon each iteration.
+	fn IterFunc
+	// buffer for indentation characters.
+	indent []byte
+	// the indentation that is to be used.
+	ichar string
+}
+
+func (i *iterator) iterate(n *Node) {
+	// Something to be done?
+	if i.fn != nil {
+		n = i.fn(i, n)
+	}
+	// Nested elements, depth first.
+	if n.FirstChild != nil {
+		i.iterate(n.FirstChild)
+	}
+	// Siblings, linked list.
+	if n.NextSibling != nil {
+		i.iterate(n.NextSibling)
+	}
+}
+
+func (n *Node) Iterate(w io.Writer, fn IterFunc) {
+	i := iterator{w, make(stack, 10), 0, fn, make([]byte, 10), "\t"}
+	i.iterate(n)
+}
+
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ *  pretty print
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
 // nameSpaceToken converts the xml name space of nameSpaceToken generated
 // xml.Tokens into the required abbreviation for the nameSpaceToken program and
@@ -79,7 +150,6 @@ func PrettyPrint(i *iterator, n *Node) *Node {
 	switch v := n.Elem.(type) {
 	case xml.StartElement:
 
-		// TODO Display bug is caused by this indentation call.
 		i.indentation()
 
 		// Name
@@ -168,4 +238,96 @@ func tabIndent(n int) []byte {
 		n--
 	}
 	return buf
+}
+
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ *  Functions
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+
+func retrieveElemByID(node *Node, id string) IterFunc {
+	return func(i *iterator, n *Node) *Node {
+		if n == nil {
+			panic("expected a valid node")
+		}
+		elem, ok := n.Elem.(xml.StartElement)
+		if !ok {
+			return n
+		}
+		for _, attr := range elem.Attr {
+			if attr.Name.Local == "id" && attr.Value == id {
+				*node = *n
+			}
+		}
+		return n
+	}
+}
+
+func insertElemById(node *Node, id string) IterFunc {
+	return func(i *iterator, n *Node) *Node {
+		if n == nil {
+			panic("expected a valid node")
+		}
+		elem, ok := n.Elem.(xml.StartElement)
+		if !ok {
+			return n
+		}
+		for _, a := range elem.Attr {
+			if a.Name.Local == "id" && a.Value == id {
+				*n = *node
+			}
+		}
+		return n
+	}
+}
+
+type replace struct {
+	attr, old, new string
+}
+
+func replaceAttr(l *lex.Lexer, e xml.StartElement, repl ...replace) {
+	for _, r := range repl {
+		for _, a := range e.Attr {
+			if a.Name.Local == r.attr {
+				l.Lex(e.Name.Local, r.attr, a.Value)
+				for {
+					item := l.Next()
+					if item.EOF() {
+						break
+					}
+					if err := item.Error(); err != nil {
+						fmt.Println(err)
+						break
+					}
+					fmt.Println("item:", item)
+				}
+			}
+		}
+	}
+}
+
+func checkAttrID(l *lex.Lexer, e xml.StartElement, id string, r ...replace) {
+	for _, a := range e.Attr {
+		if a.Value == id {
+			replaceAttr(l, e, r...)
+		}
+	}
+}
+
+func setAttrStyle(l *lex.Lexer, n *Node, id string, repl ...replace) error {
+	node := &Node{}
+	n.Iterate(os.Stdout, retrieveElemByID(node, id))
+	if node == nil || node.Elem == nil {
+		return fmt.Errorf("id %q not found", id)
+	}
+	if e, ok := node.Elem.(xml.StartElement); ok {
+		checkAttrID(l, e, id, repl...)
+		node.Elem = e
+	}
+	return nil
+
+}
+
+// pprint pretty prints the parse tree.
+func pprint(n *Node) {
+	n.Iterate(os.Stdout, PrettyPrint)
 }

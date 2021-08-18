@@ -1,4 +1,4 @@
-package set
+package spec
 
 import (
 	"bytes"
@@ -8,25 +8,25 @@ import (
 // usize is either 32 or 64 depending upon the system, 32 or 64 bit.
 const usize = 32 << (^uint(0) >> 63)
 
-// An bitVector is a set of small non-negative integers. Its zero value
+// An Set is a set of small non-negative integers. Its zero value
 // represents the empty set.
-type bitVector struct {
+type Set struct {
 	words []uint
 }
 
 // New returns an empty bitvector set.
-func New() *bitVector {
-	return &bitVector{}
+func New() *Set {
+	return &Set{}
 }
 
 // Has reports whether the set contains the non-negative value x.
-func (s *bitVector) Has(x svgType) bool {
+func (s *Set) Has(x svgType) bool {
 	word, bit := x/usize, uint(x%usize)
 	return uint(word) < uint(len(s.words)) && s.words[word]&(1<<bit) != 0
 }
 
 // Add adds the non-negative value x to the set.
-func (s *bitVector) Add(x svgType) {
+func (s *Set) Add(x svgType) {
 	word, bit := uint(x/usize), uint(x%usize)
 	for word >= uint(len(s.words)) {
 		s.words = append(s.words, 0)
@@ -35,7 +35,7 @@ func (s *bitVector) Add(x svgType) {
 }
 
 // UnionWith sets s to the union of s and t.
-func (s *bitVector) UnionWith(t *bitVector) {
+func (s *Set) UnionWith(t *Set) {
 	for i, tword := range t.words {
 		if i < len(s.words) {
 			s.words[i] |= tword
@@ -46,7 +46,7 @@ func (s *bitVector) UnionWith(t *bitVector) {
 }
 
 // String returns the set as a string of the form "{1 2 3}".
-func (s *bitVector) String() string {
+func (s *Set) String() string {
 	var buf bytes.Buffer
 	buf.WriteByte('{')
 	for i, word := range s.words {
@@ -67,7 +67,7 @@ func (s *bitVector) String() string {
 }
 
 // Len returns the number of elements within the set.
-func (s *bitVector) Len() (count uint) {
+func (s *Set) Len() (count uint) {
 	for _, word := range s.words {
 		if word == 0 {
 			continue
@@ -82,30 +82,30 @@ func (s *bitVector) Len() (count uint) {
 }
 
 // Remove removes the given integer from the set.
-func (s *bitVector) Remove(x uint) {
+func (s *Set) Remove(x uint) {
 	word, bit := x/usize, uint(x%usize)
 	s.words[word] ^= uint(1 << bit)
 }
 
 // Clear clears the set.
-func (s *bitVector) Clear() {
+func (s *Set) Clear() {
 	s.words = s.words[:0]
 }
 
 // Copy makes and returns a copy of the current set.
-func (s *bitVector) Copy() *bitVector {
-	return &bitVector{words: s.words}
+func (s *Set) Copy() *Set {
+	return &Set{words: s.words}
 }
 
 // AddAll add all of the positive integers given to the set.
-func (s *bitVector) AddAll(elems ...svgType) {
+func (s *Set) AddAll(elems ...svgType) {
 	for _, x := range elems {
 		s.Add(x)
 	}
 }
 
 // IntersectWith sets s to the intersection between s and t.
-func (s *bitVector) IntersectWith(t *bitVector) {
+func (s *Set) IntersectWith(t *Set) {
 	for i, tword := range t.words {
 		if i < len(s.words) {
 			s.words[i] &= tword
@@ -117,7 +117,7 @@ func (s *bitVector) IntersectWith(t *bitVector) {
 }
 
 // DifferenceWith sets s to the difference between s and t.
-func (s *bitVector) DifferenceWith(t *bitVector) {
+func (s *Set) DifferenceWith(t *Set) {
 	for i, word := range s.words {
 		if i < len(t.words) {
 			s.words[i] = word &^ t.words[i]
@@ -127,7 +127,7 @@ func (s *bitVector) DifferenceWith(t *bitVector) {
 
 // SymmetricDifferenceWith sets s to the symmetric difference between s
 // and t.
-func (s *bitVector) SymmetricDifferenceWith(t *bitVector) {
+func (s *Set) SymmetricDifferenceWith(t *Set) {
 	if len(t.words) > len(s.words) {
 		s.words, t.words = t.words, s.words
 	}
@@ -138,7 +138,7 @@ func (s *bitVector) SymmetricDifferenceWith(t *bitVector) {
 
 // Elems returns a slice containing the content of the set in increasing
 // order of magnitude.
-func (s *bitVector) Elems() (set []uint) {
+func (s *Set) Elems() (set []uint) {
 	l := s.Len()
 	if uint(cap(set)) < l {
 		set = append(set, make([]uint, 0, l)...)

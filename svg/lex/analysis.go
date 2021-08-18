@@ -2,7 +2,7 @@ package lex
 
 import (
 	"fmt"
-	"svg/svg/attr/lex/set"
+	"svg/svg/spec"
 )
 
 const verbose = false
@@ -215,7 +215,7 @@ func anlzUnit(next stateFn) stateFn {
 				}
 				return next
 			}
-			if set.UnitCheck[t.Value] {
+			if spec.UnitCheck[t.Value] {
 				l.anlz.send <- t
 				if verbose {
 					const fname = "anlzUnit"
@@ -259,7 +259,7 @@ func anlzColour(next stateFn) stateFn {
 			return anlzOpenBracket(next)
 		}
 		if t.Type == ItemText {
-			if _, ok := set.ColourCheck[t.Value]; ok {
+			if _, ok := spec.ColourCheck[t.Value]; ok {
 				l.anlz.send <- t
 				return next
 			} else {
@@ -359,4 +359,10 @@ func anlzEOF(l *Lexer) (fn stateFn) {
 		fmt.Printf("%s: %s: %s\n", fname, l.elem, l.attr)
 	}
 	return fn
+}
+
+func anlzFontFamily(next stateFn) stateFn {
+	return func(l *Lexer) (fn stateFn) {
+		return fn
+	}
 }

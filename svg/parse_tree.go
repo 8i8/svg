@@ -47,9 +47,9 @@ func copyNode(t xml.Token) (node xml.Token) {
 	return
 }
 
-// addNode sets the node for many of the xml.Token types for the
+// addSibling sets the node for many of the xml.Token types for the
 // parseToken function.
-func (p *parser) addNode(v xml.Token) {
+func (p *parser) addSibling(v xml.Token) {
 	if p.current == nil {
 		p.node = &Node{Elem: v}
 		p.current = &p.node
@@ -64,7 +64,7 @@ func (p *parser) addNode(v xml.Token) {
 	}
 }
 
-func (p *parser) nestNode(v xml.Token) {
+func (p *parser) addChild(v xml.Token) {
 	if p.current == nil {
 		p.node = &Node{Elem: v}
 		p.current = &p.node
@@ -76,7 +76,7 @@ func (p *parser) nestNode(v xml.Token) {
 	p.current = &(*p.current).FirstChild
 }
 
-// parseToken generates a parse tree from the tokens that it receives.
+// addToParseTree progressively constructs a parse tree.
 //
 // element types:
 //	StartElement
@@ -86,16 +86,16 @@ func (p *parser) nestNode(v xml.Token) {
 //	ProcInst
 //	Directive
 //
-func (p *parser) parseToken(t, n xml.Token) {
+func (p *parser) addToParseTree(t, n xml.Token) {
 	switch v := t.(type) {
 	case xml.StartElement:
 		if _, ok := n.(xml.EndElement); ok {
-			p.addNode(v.Copy())
+			p.addSibling(v.Copy())
 			if verbose {
-				fmt.Println("StartElement:", v.Name.Local)
+				fmt.Println("StartElement: sibling", v.Name.Local)
 			}
 		} else {
-			p.nestNode(v.Copy())
+			p.addChild(v.Copy())
 			if verbose {
 				fmt.Println("StartElement: nested:", v.Name.Local)
 			}
@@ -106,27 +106,27 @@ func (p *parser) parseToken(t, n xml.Token) {
 			}
 		}
 	case xml.EndElement:
-		p.addNode(v)
+		p.addSibling(v)
 		if verbose {
 			fmt.Println("EndElement:", v.Name.Local)
 		}
 	case xml.CharData:
-		p.addNode(v.Copy())
+		p.addSibling(v.Copy())
 		if verbose {
 			fmt.Printf("CharData: %#v\n", v)
 		}
 	case xml.Comment:
-		p.addNode(v.Copy())
+		p.addSibling(v.Copy())
 		if verbose {
 			fmt.Printf("Comment: %s\n", string(v))
 		}
 	case xml.ProcInst:
-		p.addNode(v.Copy())
+		p.addSibling(v.Copy())
 		if verbose {
 			fmt.Printf("ProcInst: %v\n", v)
 		}
 	case xml.Directive:
-		p.addNode(v.Copy())
+		p.addSibling(v.Copy())
 		if verbose {
 			fmt.Printf("Directive: %s\n", string(v))
 		}
@@ -150,16 +150,17 @@ func (p *parser) parse(in io.Reader) *Node {
 	}
 	token = copyNode(token)
 
+	// Scan tokens.
 	for {
 		next, err = d.Token()
 		if err == io.EOF {
-			p.parseToken(token, next)
+			p.addToParseTree(token, next)
 			break
 		} else if err != nil {
 			fmt.Println("svg/svg: parse:", err)
 			continue
 		}
-		p.parseToken(token, next)
+		p.addToParseTree(token, next)
 		token = copyNode(next)
 	}
 	return p.head.node

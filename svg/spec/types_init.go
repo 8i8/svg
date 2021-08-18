@@ -1,5 +1,5 @@
 // https://dev.w3.org/SVG/profiles/1.1F2/publish/
-package set
+package spec
 
 // svg elemtent has baseProfile in attributes twice
 // svg attribuites not in full list
@@ -11,114 +11,114 @@ import "errors"
 var (
 	// Elements
 	animationElements = []svgType{
-		elemAnimate, elemAnimateColor, elemAnimateMotion,
-		elemAnimateTransform, elemSet,
+		ElemAnimate, ElemAnimateColor, ElemAnimateMotion,
+		ElemAnimateTransform, ElemSet,
 	}
 	descriptiveElements = []svgType{
-		elemDesc, elemMetadata, elemTitle,
+		ElemDesc, ElemMetadata, ElemTitle,
 	}
 	shapeElements = []svgType{
-		elemCircle, elemEllipse, elemLine, elemPath,
-		elemPolygon, elemPolyline, elemRect,
+		ElemCircle, ElemEllipse, ElemLine, ElemPath,
+		ElemPolygon, ElemPolyline, ElemRect,
 	}
 	structuralElements = []svgType{
-		elemDefs, elemG, elemSvg, elemSymbol, elemUse,
+		ElemDefs, ElemG, ElemSvg, ElemSymbol, ElemUse,
 	}
 	gradientElements = []svgType{
-		elemLinearGradient, elemRadialGradient,
+		ElemLinearGradient, ElemRadialGradient,
 	}
 	// Attributes
 	coreAttributes = []svgType{
-		attrId, attrXmlBase, attrXmlLang, attrXmlSpace,
+		AttrId, AttrXmlBase, AttrXmlLang, AttrXmlSpace,
 	}
 	presentationAttributes = []svgType{
-		attrAlignmentBaseline, attrBaselineShift, attrClip,
-		attrClipPath, attrClipRule, attrColor,
-		attrColorInterpolation, attrColorInterpolationFilters,
-		attrColorProfile, attrColorRendering, attrCursor,
-		attrDirection, attrDisplay, attrDominantBaseline,
-		attrEnableBackground, attrFill, attrFillOpacity,
-		attrFillRule, attrFilter, attrFloodColor,
-		attrFloodOpacity, attrFontFamily, attrFontSize,
-		attrFontSizeAdjust, attrFontStretch, attrFontStyle,
-		attrFontVariant, attrFontWeight,
-		attrGlyphOrientationHorizontal,
-		attrGlyphOrientationVertical, attrImageRendering,
-		attrKerning, attrLetterSpacing, attrLightingColor,
-		attrMarkerEnd, attrMarkerMid, attrMarkerStart, attrMask,
-		attrOpacity, attrOverflow, attrPointerEvents,
-		attrShapeRendering, attrStopColor, attrStopOpacity,
-		attrStroke, attrStrokeDasharray, attrStrokeDashoffset,
-		attrStrokeLinecap, attrStrokeLinejoin,
-		attrStrokeMiterlimit, attrStrokeOpacity,
-		attrStrokeWidth, attrTextAnchor, attrTextDecoration,
-		attrTextRendering, attrUnicodeBidi, attrVisibility,
-		attrWordSpacing, attrWritingMode,
+		AttrAlignmentBaseline, AttrBaselineShift, AttrClip,
+		AttrClipPath, AttrClipRule, AttrColor,
+		AttrColorInterpolation, AttrColorInterpolationFilters,
+		AttrColorProfile, AttrColorRendering, AttrCursor,
+		AttrDirection, AttrDisplay, AttrDominantBaseline,
+		AttrEnableBackground, AttrFill, AttrFillOpacity,
+		AttrFillRule, AttrFilter, AttrFloodColor,
+		AttrFloodOpacity, AttrFontFamily, AttrFontSize,
+		AttrFontSizeAdjust, AttrFontStretch, AttrFontStyle,
+		AttrFontVariant, AttrFontWeight,
+		AttrGlyphOrientationHorizontal,
+		AttrGlyphOrientationVertical, AttrImageRendering,
+		AttrKerning, AttrLetterSpacing, AttrLightingColor,
+		AttrMarkerEnd, AttrMarkerMid, AttrMarkerStart, AttrMask,
+		AttrOpacity, AttrOverflow, AttrPointerEvents,
+		AttrShapeRendering, AttrStopColor, AttrStopOpacity,
+		AttrStroke, AttrStrokeDasharray, AttrStrokeDashoffset,
+		AttrStrokeLinecap, AttrStrokeLinejoin,
+		AttrStrokeMiterlimit, AttrStrokeOpacity,
+		AttrStrokeWidth, AttrTextAnchor, AttrTextDecoration,
+		AttrTextRendering, AttrUnicodeBidi, AttrVisibility,
+		AttrWordSpacing, AttrWritingMode,
 	}
 	conditionalProcessingAttributes = []svgType{
-		attrRequiredExtensions, attrRequiredFeatures,
-		attrSystemLanguage,
+		AttrRequiredExtensions, AttrRequiredFeatures,
+		AttrSystemLanguage,
 	}
 	graphicalEventAttributes = []svgType{
-		attrOnfocusin, attrOnfocusout, attrOnactivate,
-		attrOnclick, attrOnmousedown, attrOnmouseup,
-		attrOnmouseover, attrOnmousemove, attrOnmouseout,
-		attrOnload,
+		AttrOnfocusin, AttrOnfocusout, AttrOnactivate,
+		AttrOnclick, AttrOnmousedown, AttrOnmouseup,
+		AttrOnmouseover, AttrOnmousemove, AttrOnmouseout,
+		AttrOnload,
 	}
 	xlinkAttributes = []svgType{
-		attrXlinkHref, attrXlinkShow, attrXlinkActuate,
-		attrXlinkType, attrXlinkRole, attrXlinkArcrole,
-		attrXlinkTitle,
+		AttrXlinkHref, AttrXlinkShow, AttrXlinkActuate,
+		AttrXlinkType, AttrXlinkRole, AttrXlinkArcrole,
+		AttrXlinkTitle,
 	}
 	animationEventAttributes = []svgType{
-		attrOnbegin, attrOnend, attrOnrepeat, attrOnload,
+		AttrOnbegin, AttrOnend, AttrOnrepeat, AttrOnload,
 	}
 	animationAttributeTargetAttributes = []svgType{
-		attributeType, attributeName,
+		AttrType, AttrName,
 	}
 	animationTimingAttributes = []svgType{
-		attrBegin, attrDur, attrEnd, attrMin, attrMax,
-		attrRestart, attrRepeatCount, attrRepeatDur, attrFill,
+		AttrBegin, AttrDur, AttrEnd, AttrMin, AttrMax,
+		AttrRestart, AttrRepeatCount, AttrRepeatDur, AttrFill,
 	}
 	animationValueAttributes = []svgType{
-		attrBegin, attrDur, attrEnd, attrMin, attrMax,
-		attrRestart, attrRepeatCount, attrRepeatDur, attrFill,
+		AttrBegin, AttrDur, AttrEnd, AttrMin, AttrMax,
+		AttrRestart, AttrRepeatCount, AttrRepeatDur, AttrFill,
 	}
 	animationAdditionAttributes = []svgType{
-		attrAdditive, attrAccumulate,
+		AttrAdditive, AttrAccumulate,
 	}
 	filterPrimitiveAttributes = []svgType{
-		attrX, attrY, attrWidth, attrHeight, attrResult,
+		AttrX, AttrY, AttrWidth, AttrHeight, AttrResult,
 	}
 	lightSourceElements = []svgType{
-		elemFeDiffuseLighting, elemFeSpecularLighting,
-		elemFeDistantLight, elemFePointLight, elemFeSpotLight,
+		ElemFeDiffuseLighting, ElemFeSpecularLighting,
+		ElemFeDistantLight, ElemFePointLight, ElemFeSpotLight,
 	}
 	transferFunctionElementAttributes = []svgType{
-		attrType, attrTableValues, attrSlope, attrIntercept,
-		attrAmplitude, attrExponent, attrOffset,
+		AttrType, AttrTableValues, AttrSlope, AttrIntercept,
+		AttrAmplitude, AttrExponent, AttrOffset,
 	}
 	filterPrimiveElements = []svgType{
-		elemFeBlend, elemFeColorMatrix, elemFeComponentTransfer,
-		elemFeComposite, elemFeConvolveMatrix,
-		elemFeDiffuseLighting, elemFeDisplacementMap,
-		elemFeFlood, elemFeGaussianBlur, elemFeImage,
-		elemFeMerge, elemFeMorphology, elemFeOffset,
-		elemFeSpecularLighting, elemFeTile, elemFeTurbulence,
+		ElemFeBlend, ElemFeColorMatrix, ElemFeComponentTransfer,
+		ElemFeComposite, ElemFeConvolveMatrix,
+		ElemFeDiffuseLighting, ElemFeDisplacementMap,
+		ElemFeFlood, ElemFeGaussianBlur, ElemFeImage,
+		ElemFeMerge, ElemFeMorphology, ElemFeOffset,
+		ElemFeSpecularLighting, ElemFeTile, ElemFeTurbulence,
 	}
 	documentEventAttributes = []svgType{
-		attrOnunload, attrOnabort, attrOnerror, attrOnresize,
-		attrOnscroll, attrOnzoom,
+		AttrOnunload, AttrOnabort, AttrOnerror, AttrOnresize,
+		AttrOnscroll, AttrOnzoom,
 	}
 )
 
 func init() {
-	v := group{bitVector: new(bitVector)}
+	v := group{Set: new(Set)}
 
 	// <a>
 	// https://dev.w3.org/SVG/profiles/1.1F2/publish/linking.html#AElement
 	// Catagory
-	v.Add(cataContainerElement)
+	v.Add(CataContainerElement)
 	// Content model
 	v.AddAll(animationElements...)
 	v.AddAll(descriptiveElements...)
@@ -127,11 +127,11 @@ func init() {
 	v.AddAll(gradientElements...)
 	v.AddAll(graphicalEventAttributes...)
 	v.AddAll(
-		elemA, elemAltGlyphDef, elemClipPath, elemColorProfile,
-		elemCursor, elemFilter, elemFont, elemFontFace,
-		elemForeignObject, elemImage, elemMarker, elemMask,
-		elemPattern, elemScript, elemStyle, elemSwitch,
-		elemText, elemView,
+		ElemA, ElemAltGlyphDef, ElemClipPath, ElemColorProfile,
+		ElemCursor, ElemFilter, ElemFont, ElemFontFace,
+		ElemForeignObject, ElemImage, ElemMarker, ElemMask,
+		ElemPattern, ElemScript, ElemStyle, ElemSwitch,
+		ElemText, ElemView,
 	)
 	// Attributes
 	v.AddAll(conditionalProcessingAttributes...)
@@ -140,18 +140,18 @@ func init() {
 	v.AddAll(presentationAttributes...)
 	v.AddAll(xlinkAttributes...)
 	v.AddAll(
-		attrClass, attrStyle, attrExternalResourcesRequired,
-		attrTransform, attrTarget,
+		AttrClass, AttrStyle, AttrExternalResourcesRequired,
+		AttrTransform, AttrTarget,
 	)
 	// DOM interface
-	v.Add(domSVGAElement)
-	elements[elemA] = v
+	v.Add(DomSVGAElement)
+	Elements[ElemA] = v
 	v.Clear()
 
 	// <altGlyph>
 	// https://dev.w3.org/SVG/profiles/1.1F2/publish/text.html#AltGlyphElement
 	// Catagory
-	v.AddAll(cataTextContentElement, cataTextContentChildElement)
+	v.AddAll(CataTextContentElement, CataTextContentChildElement)
 	// Content Model
 	// Any elements or character data.
 	// Attributes
@@ -161,13 +161,13 @@ func init() {
 	v.AddAll(presentationAttributes...)
 	v.AddAll(xlinkAttributes...)
 	v.AddAll(
-		attrClass, attrStyle, attrExternalResourcesRequired,
-		attrX, attrY, attrDx, attrDy, attrGlyphRef, attrFormat,
-		attrRotate, attrXlinkHref,
+		AttrClass, AttrStyle, AttrExternalResourcesRequired,
+		AttrX, AttrY, AttrDx, AttrDy, AttrGlyphRef, AttrFormat,
+		AttrRotate, AttrXlinkHref,
 	)
 	// DOM interface
-	v.Add(domSVGAltGlyphElement)
-	elements[elemAltGlyph] = v
+	v.Add(DomSVGAltGlyphElement)
+	Elements[ElemAltGlyph] = v
 	v.Clear()
 
 	// <altGlyphDef>
@@ -178,20 +178,20 @@ func init() {
 	// Either:
 	//	one or more ‘glyphRef’ elements, or
 	//	one or more ‘altGlyphItem’ elements.
-	v.AddAll(elemGlyphRef, elemAltGlyphItem)
+	v.AddAll(ElemGlyphRef, ElemAltGlyphItem)
 	// Attributes
 	v.AddAll(coreAttributes...)
 	// DOM interface
-	v.Add(domSVGAltGlyphDefElement)
+	v.Add(DomSVGAltGlyphDefElement)
 	v.contract = append(v.contract, func(g group) error {
-		if g.Has(elemGlyphRef) && !g.Has(elemAltGlyphItem) ||
-			!g.Has(elemGlyphRef) && g.Has(elemAltGlyphItem) {
+		if g.Has(ElemGlyphRef) && !g.Has(ElemAltGlyphItem) ||
+			!g.Has(ElemGlyphRef) && g.Has(ElemAltGlyphItem) {
 			return nil
 		}
 		return errors.New("<altGlyphDef> requires either: one or more " +
 			"‘glyphRef’ elements, or one or more ‘altGlyphItem’ elements.")
 	})
-	elements[elemAltGlyphDef] = v
+	Elements[ElemAltGlyphDef] = v
 	v.Clear()
 
 	// <altGlyphItem>
@@ -200,24 +200,24 @@ func init() {
 	// none
 	// Content Model
 	// One or more ‘glyphRef’ elements.
-	v.Add(elemGlyphRef)
+	v.Add(ElemGlyphRef)
 	// Attributes
 	v.AddAll(coreAttributes...)
 	// DOM interface
-	v.Add(domSVGAltGlyphItemElement)
+	v.Add(DomSVGAltGlyphItemElement)
 	v.contract = append(v.contract, func(g group) error {
-		if g.Has(elemGlyphRef) {
+		if g.Has(ElemGlyphRef) {
 			return nil
 		}
 		return errors.New("<altGlyphItem> requires one or more ‘glyphRef’ child elements.")
 	})
-	elements[elemAltGlyphItem] = v
+	Elements[ElemAltGlyphItem] = v
 	v.Clear()
 
 	// <animate>
 	// https://dev.w3.org/SVG/profiles/1.1F2/publish/animate.html#AnimateElement
 	// Catagory
-	v.Add(cataAnimationElement)
+	v.Add(CataAnimationElement)
 	// Content Model
 	v.AddAll(descriptiveElements...)
 	// Attributes
@@ -230,16 +230,16 @@ func init() {
 	v.AddAll(animationValueAttributes...)
 	v.AddAll(animationAdditionAttributes...)
 	v.AddAll(presentationAttributes...)
-	v.Add(attrExternalResourcesRequired)
+	v.Add(AttrExternalResourcesRequired)
 	// DOM interface
-	v.Add(domSVGAnimateElement)
-	elements[elemAnimate] = v
+	v.Add(DomSVGAnimateElement)
+	Elements[ElemAnimate] = v
 	v.Clear()
 
 	// <animateColor>
 	// https://dev.w3.org/SVG/profiles/1.1F2/publish/animate.html#AnimateColorElement
 	// Catagory
-	v.Add(cataAnimationElement)
+	v.Add(CataAnimationElement)
 	// Content model
 	v.AddAll(descriptiveElements...)
 	// Attributes
@@ -252,16 +252,16 @@ func init() {
 	v.AddAll(animationValueAttributes...)
 	v.AddAll(animationAdditionAttributes...)
 	v.AddAll(presentationAttributes...)
-	v.Add(attrExternalResourcesRequired)
+	v.Add(AttrExternalResourcesRequired)
 	// DOM interface
-	v.Add(domSVGAnimateColorElement)
-	elements[elemAnimateColor] = v
+	v.Add(DomSVGAnimateColorElement)
+	Elements[ElemAnimateColor] = v
 	v.Clear()
 
 	// <animateMotion>
 	// https://dev.w3.org/SVG/profiles/1.1F2/publish/animate.html#AnimateMotionElement
 	// Catagory
-	v.Add(cataAnimationElement)
+	v.Add(CataAnimationElement)
 	// Content Model
 	v.AddAll(descriptiveElements...)
 	// Attributes
@@ -274,24 +274,24 @@ func init() {
 	v.AddAll(animationValueAttributes...)
 	v.AddAll(animationAdditionAttributes...)
 	v.AddAll(
-		attrExternalResourcesRequired, attrPath, attrKeyPoints,
-		attrRotate, attrOrigin,
+		AttrExternalResourcesRequired, AttrPath, AttrKeyPoints,
+		AttrRotate, AttrOrigin,
 	)
 	// DOM interface
-	v.Add(domSVGAnimateMotionElement)
+	v.Add(DomSVGAnimateMotionElement)
 	v.contract = append(v.contract, func(g group) error {
-		if g.Has(elemMpath) {
+		if g.Has(ElemMpath) {
 			return nil
 		}
 		return errors.New("<animateMotion> can have most one ‘mpath’ element.")
 	})
-	elements[elemAnimateMotion] = v
+	Elements[ElemAnimateMotion] = v
 	v.Clear()
 
 	// <animateTransform>
 	// https://dev.w3.org/SVG/profiles/1.1F2/publish/animate.html#AnimateTransformElement
 	// Catagory
-	v.Add(cataAnimationElement)
+	v.Add(CataAnimationElement)
 	// Content Model
 	v.AddAll(descriptiveElements...)
 	// Attributes
@@ -304,20 +304,20 @@ func init() {
 	v.AddAll(animationValueAttributes...)
 	v.AddAll(animationAdditionAttributes...)
 	v.AddAll(
-		attrExternalResourcesRequired,
-		attrType,
+		AttrExternalResourcesRequired,
+		AttrType,
 	)
 	// DOM interface
-	v.Add(domSVGAnimateTransformElement)
-	elements[elemAnimateTransform] = v
+	v.Add(DomSVGAnimateTransformElement)
+	Elements[ElemAnimateTransform] = v
 	v.Clear()
 
-	// <elemCircle>
+	// <ElemCircle>
 	// https://dev.w3.org/SVG/profiles/1.1F2/publish/shapes.html#CircleElement
 	// Catagory
 	v.AddAll(
-		cataBasicShapeElement, cataGraphicsElement,
-		cataShapeElement,
+		CataBasicShapeElement, CataGraphicsElement,
+		CataShapeElement,
 	)
 	// Content Model
 	v.AddAll(animationElements...)
@@ -328,12 +328,12 @@ func init() {
 	v.AddAll(graphicalEventAttributes...)
 	v.AddAll(presentationAttributes...)
 	v.AddAll(
-		attrClass, attrStyle, attrExternalResourcesRequired,
-		attrTransform, attrCx, attrCy, attrR,
+		AttrClass, AttrStyle, AttrExternalResourcesRequired,
+		AttrTransform, AttrCx, AttrCy, AttrR,
 	)
 	// DOM interface
-	v.Add(domSVGCircleElement)
-	elements[elemCircle] = v
+	v.Add(DomSVGCircleElement)
+	Elements[ElemCircle] = v
 	v.Clear()
 
 	// <clipPath>
@@ -345,18 +345,18 @@ func init() {
 	v.AddAll(descriptiveElements...)
 	v.AddAll(animationElements...)
 	v.AddAll(shapeElements...)
-	v.AddAll(elemText, elemUse)
+	v.AddAll(ElemText, ElemUse)
 	// Attributes
 	v.AddAll(conditionalProcessingAttributes...)
 	v.AddAll(coreAttributes...)
 	v.AddAll(presentationAttributes...)
 	v.AddAll(
-		attrClass, attrStyle, attrExternalResourcesRequired,
-		attrTransform, attrClipPathUnits,
+		AttrClass, AttrStyle, AttrExternalResourcesRequired,
+		AttrTransform, AttrClipPathUnits,
 	)
 	// DOM interface
-	v.Add(domSVGClipPathElement)
-	elements[elemClipPath] = v
+	v.Add(DomSVGClipPathElement)
+	Elements[ElemClipPath] = v
 	v.Clear()
 
 	// <color-profile>
@@ -368,10 +368,10 @@ func init() {
 	// Attributes
 	v.AddAll(coreAttributes...)
 	v.AddAll(xlinkAttributes...)
-	v.AddAll(attrLocal, attrName, attrRenderingIntent, attrXlinkHref)
+	v.AddAll(AttrLocal, AttrName, AttrRenderingIntent, AttrXlinkHref)
 	// DOM interface
-	v.Add(domSVGColorProfileElement)
-	elements[elemColorProfile] = v
+	v.Add(DomSVGColorProfileElement)
+	Elements[ElemColorProfile] = v
 	v.Clear()
 
 	// <cursor>
@@ -385,18 +385,18 @@ func init() {
 	v.AddAll(conditionalProcessingAttributes...)
 	v.AddAll(xlinkAttributes...)
 	v.AddAll(
-		attrExternalResourcesRequired, attrX, attrY,
-		attrXlinkHref,
+		AttrExternalResourcesRequired, AttrX, AttrY,
+		AttrXlinkHref,
 	)
 	// DOM interface
-	v.Add(domSVGCursorElement)
-	elements[elemCursor] = v
+	v.Add(DomSVGCursorElement)
+	Elements[ElemCursor] = v
 	v.Clear()
 
 	// <defs>
 	// https://dev.w3.org/SVG/profiles/1.1F2/publish/struct.html#DefsElement
 	// Catagory
-	v.AddAll(cataContainerElement, cataStructuralElement)
+	v.AddAll(CataContainerElement, CataStructuralElement)
 	// Content Model
 	v.AddAll(animationElements...)
 	v.AddAll(descriptiveElements...)
@@ -404,11 +404,11 @@ func init() {
 	v.AddAll(structuralElements...)
 	v.AddAll(gradientElements...)
 	v.AddAll(
-		elemA, elemAltGlyphDef, elemClipPath, elemColorProfile,
-		elemCursor, elemFilter, elemFont, elemFontFace,
-		elemForeignObject, elemImage, elemMarker, elemMask,
-		elemPattern, elemScript, elemStyle, elemSwitch,
-		elemText, elemView,
+		ElemA, ElemAltGlyphDef, ElemClipPath, ElemColorProfile,
+		ElemCursor, ElemFilter, ElemFont, ElemFontFace,
+		ElemForeignObject, ElemImage, ElemMarker, ElemMask,
+		ElemPattern, ElemScript, ElemStyle, ElemSwitch,
+		ElemText, ElemView,
 	)
 	// Attributes
 	v.AddAll(conditionalProcessingAttributes...)
@@ -416,34 +416,34 @@ func init() {
 	v.AddAll(graphicalEventAttributes...)
 	v.AddAll(presentationAttributes...)
 	v.AddAll(
-		attrClass, attrStyle, attrExternalResourcesRequired,
-		attrTransform,
+		AttrClass, AttrStyle, AttrExternalResourcesRequired,
+		AttrTransform,
 	)
 	// DOM interface
-	v.Add(domSVGDefsElement)
-	elements[elemDefs] = v
+	v.Add(DomSVGDefsElement)
+	Elements[ElemDefs] = v
 	v.Clear()
 
 	// <desc>
 	// https://dev.w3.org/SVG/profiles/1.1F2/publish/struct.html#DescElement
 	// Catagory
-	v.Add(cataDescriptiveElement)
+	v.Add(CataDescriptiveElement)
 	// Content Model
 	// Any elements or character data.
 	// Attributes
 	v.AddAll(coreAttributes...)
-	v.AddAll(attrClass, attrStyle)
+	v.AddAll(AttrClass, AttrStyle)
 	// DOM interface
-	v.Add(domSVGDescElement)
-	elements[elemDesc] = v
+	v.Add(DomSVGDescElement)
+	Elements[ElemDesc] = v
 	v.Clear()
 
 	// <ellipse>
 	// https://dev.w3.org/SVG/profiles/1.1F2/publish/shapes.html#EllipseElement
 	// Catagory
 	v.AddAll(
-		cataBasicShapeElement, cataGraphicsElement,
-		cataShapeElement,
+		CataBasicShapeElement, CataGraphicsElement,
+		CataShapeElement,
 	)
 	// Content Model
 	v.AddAll(animationElements...)
@@ -454,106 +454,106 @@ func init() {
 	v.AddAll(graphicalEventAttributes...)
 	v.AddAll(presentationAttributes...)
 	v.AddAll(
-		attrClass, attrStyle, attrExternalResourcesRequired,
-		attrTransform, attrCx, attrCy, attrRx, attrRy,
+		AttrClass, AttrStyle, AttrExternalResourcesRequired,
+		AttrTransform, AttrCx, AttrCy, AttrRx, AttrRy,
 	)
 	// DOM interface
-	v.Add(domSVGEllipseElement)
-	elements[elemEllipse] = v
+	v.Add(DomSVGEllipseElement)
+	Elements[ElemEllipse] = v
 	v.Clear()
 
 	// <feBlend>
 	// https://dev.w3.org/SVG/profiles/1.1F2/publish/filters.html#feBlendElement
 	// Catagory
-	v.Add(cataFilterPrimitiveElement)
+	v.Add(CataFilterPrimitiveElement)
 	// Content Model
-	v.AddAll(elemAnimate, elemSet)
+	v.AddAll(ElemAnimate, ElemSet)
 	// Attributes
 	v.AddAll(coreAttributes...)
 	v.AddAll(coreAttributes...)
 	v.AddAll(presentationAttributes...)
 	v.AddAll(filterPrimitiveAttributes...)
-	v.AddAll(attrClass, attrStyle, attrIn, attrIn2, attrMode)
+	v.AddAll(AttrClass, AttrStyle, AttrIn, AttrIn2, AttrMode)
 	// DOM interface
-	v.Add(domSVGFEBlendElement)
-	elements[elemFeBlend] = v
+	v.Add(DomSVGFEBlendElement)
+	Elements[ElemFeBlend] = v
 	v.Clear()
 
 	// <feColorMatrix>
 	// https://dev.w3.org/SVG/profiles/1.1F2/publish/filters.html#feColorMatrixElement
 	// Catagory
-	v.Add(cataFilterPrimitiveElement)
+	v.Add(CataFilterPrimitiveElement)
 	// Content Model
-	v.AddAll(elemAnimate, elemSet)
+	v.AddAll(ElemAnimate, ElemSet)
 	// Attributes
 	v.AddAll(coreAttributes...)
 	v.AddAll(presentationAttributes...)
 	v.AddAll(filterPrimitiveAttributes...)
-	v.AddAll(attrClass, attrStyle, attrIn, attrType, attrValues)
+	v.AddAll(AttrClass, AttrStyle, AttrIn, AttrType, AttrValues)
 	// DOM interface
-	v.Add(domSVGFEColorMatrixElement)
-	elements[elemFeColorMatrix] = v
+	v.Add(DomSVGFEColorMatrixElement)
+	Elements[ElemFeColorMatrix] = v
 	v.Clear()
 
 	// <feComponentTransfer>
 	// https://dev.w3.org/SVG/profiles/1.1F2/publish/filters.html#feComponentTransferElement
 	// Catagory
-	v.Add(cataFilterPrimitiveElement)
+	v.Add(CataFilterPrimitiveElement)
 	// Content Model
-	v.AddAll(elemFeFuncA, elemFeFuncB, elemFeFuncG, elemFeFuncR)
+	v.AddAll(ElemFeFuncA, ElemFeFuncB, ElemFeFuncG, ElemFeFuncR)
 	// Attributes
 	v.AddAll(coreAttributes...)
 	v.AddAll(presentationAttributes...)
 	v.AddAll(filterPrimitiveAttributes...)
-	v.AddAll(attrClass, attrStyle, attrIn)
+	v.AddAll(AttrClass, AttrStyle, AttrIn)
 	// DOM interface
-	v.Add(domSVGFEComponentTransferElement)
-	elements[elemFeComponentTransfer] = v
+	v.Add(DomSVGFEComponentTransferElement)
+	Elements[ElemFeComponentTransfer] = v
 	v.Clear()
 
 	// <feComposite>
 	// Catagory
-	v.Add(cataFilterPrimitiveElement)
+	v.Add(CataFilterPrimitiveElement)
 	// Content Model
-	v.AddAll(elemAnimate, elemSet)
+	v.AddAll(ElemAnimate, ElemSet)
 	// Attributes
 	v.AddAll(coreAttributes...)
 	v.AddAll(presentationAttributes...)
 	v.AddAll(filterPrimitiveAttributes...)
 	v.AddAll(
-		attrClass, attrStyle, attrIn, attrIn2, attrOperator,
-		attrK1, attrK2, attrK3, attrK4,
+		AttrClass, AttrStyle, AttrIn, AttrIn2, AttrOperator,
+		AttrK1, AttrK2, AttrK3, AttrK4,
 	)
 	// DOM interface
-	v.Add(domSVGFECompositeElement)
-	elements[elemFeComposite] = v
+	v.Add(DomSVGFECompositeElement)
+	Elements[ElemFeComposite] = v
 	v.Clear()
 
 	// <feConvolveMatrix>
 	// https://dev.w3.org/SVG/profiles/1.1F2/publish/filters.html#feConvolveMatrixElement
 	// Catagory
-	v.Add(cataFilterPrimitiveElement)
+	v.Add(CataFilterPrimitiveElement)
 	// Content Model
-	v.AddAll(elemAnimate, elemSet)
+	v.AddAll(ElemAnimate, ElemSet)
 	// Attributes
 	v.AddAll(coreAttributes...)
 	v.AddAll(presentationAttributes...)
 	v.AddAll(filterPrimitiveAttributes...)
 	v.AddAll(
-		attrClass, attrStyle, attrIn, attrOrder,
-		attrKernelMatrix, attrDivisor, attrBias, attrTargetX,
-		attrTargetY, attrEdgeMode, attrKernelUnitLength,
-		attrPreserveAlpha,
+		AttrClass, AttrStyle, AttrIn, AttrOrder,
+		AttrKernelMatrix, AttrDivisor, AttrBias, AttrTargetX,
+		AttrTargetY, AttrEdgeMode, AttrKernelUnitLength,
+		AttrPreserveAlpha,
 	)
 	// DOM interface
-	v.Add(domSVGFEConvolveMatrixElement)
-	elements[elemFeConvolveMatrix] = v
+	v.Add(DomSVGFEConvolveMatrixElement)
+	Elements[ElemFeConvolveMatrix] = v
 	v.Clear()
 
 	// <feDiffuseLighting>
 	// https://dev.w3.org/SVG/profiles/1.1F2/publish/filters.html#feDiffuseLightingElement
 	// Catagory
-	v.Add(cataFilterPrimitiveElement)
+	v.Add(CataFilterPrimitiveElement)
 	// Content Model
 	// Any number of descriptive elements and exactly one light
 	// source element, in any order.
@@ -564,11 +564,11 @@ func init() {
 	v.AddAll(presentationAttributes...)
 	v.AddAll(filterPrimitiveAttributes...)
 	v.AddAll(
-		attrClass, attrStyle, attrIn, attrSurfaceScale,
-		attrDiffuseConstant, attrKernelUnitLength,
+		AttrClass, AttrStyle, AttrIn, AttrSurfaceScale,
+		AttrDiffuseConstant, AttrKernelUnitLength,
 	)
 	// DOM interface
-	v.Add(domSVGFEDiffuseLightingElement)
+	v.Add(DomSVGFEDiffuseLightingElement)
 	v.contract = append(v.contract, func(g group) error {
 		var count int
 		err := errors.New("<feDiffuseLighting> only one light " +
@@ -583,58 +583,58 @@ func init() {
 		}
 		return nil
 	})
-	elements[elemFeDiffuseLighting] = v
+	Elements[ElemFeDiffuseLighting] = v
 	v.Clear()
 
 	// <feDisplacementMap>
 	// https://dev.w3.org/SVG/profiles/1.1F2/publish/filters.html#feDisplacementMapElement
 	// Catagory
-	v.Add(cataFilterPrimitiveElement)
+	v.Add(CataFilterPrimitiveElement)
 	// Content Model
-	v.AddAll(elemAnimate, elemSet)
+	v.AddAll(ElemAnimate, ElemSet)
 	// Attributes
 	v.AddAll(coreAttributes...)
 	v.AddAll(presentationAttributes...)
 	v.AddAll(filterPrimitiveAttributes...)
 	v.AddAll(
-		attrClass, attrStyle, attrIn, attrIn2, attrScale,
-		attrXChannelSelector, attrYChannelSelector,
+		AttrClass, AttrStyle, AttrIn, AttrIn2, AttrScale,
+		AttrXChannelSelector, AttrYChannelSelector,
 	)
 	// DOM interface
-	v.Add(domSVGFEDisplacementMapElement)
-	elements[elemFeDisplacementMap] = v
+	v.Add(DomSVGFEDisplacementMapElement)
+	Elements[ElemFeDisplacementMap] = v
 	v.Clear()
 
 	// <feDistantLight>
 	// https://dev.w3.org/SVG/profiles/1.1F2/publish/filters.html#feDistantLightElement
 	// Catagory
-	v.Add(cataLightSourceElement)
+	v.Add(CataLightSourceElement)
 	// Content Model
 	// Any number of the following elements, in any order:
-	v.AddAll(elemAnimate, elemSet)
+	v.AddAll(ElemAnimate, ElemSet)
 	// Attributes
 	v.AddAll(coreAttributes...)
-	v.AddAll(attrAzimuth, attrElevation)
+	v.AddAll(AttrAzimuth, AttrElevation)
 	// DOM interface
-	v.Add(domSVGFEDistantLightElement)
-	elements[elemFeDistantLight] = v
+	v.Add(DomSVGFEDistantLightElement)
+	Elements[ElemFeDistantLight] = v
 	v.Clear()
 
 	// <feFlood>
 	// https://dev.w3.org/SVG/profiles/1.1F2/publish/filters.html#feFloodElement
 	// Catagory
-	v.Add(cataFilterPrimitiveElement)
+	v.Add(CataFilterPrimitiveElement)
 	// Content Model
 	// Any number of the following elements, in any order:
-	v.AddAll(elemAnimate, elemAnimateColor, elemSet)
+	v.AddAll(ElemAnimate, ElemAnimateColor, ElemSet)
 	// Attributes
 	v.AddAll(coreAttributes...)
 	v.AddAll(presentationAttributes...)
 	v.AddAll(filterPrimitiveAttributes...)
-	v.AddAll(attrClass, attrStyle)
+	v.AddAll(AttrClass, AttrStyle)
 	// DOM interface
-	v.Add(domSVGFEFloodElement)
-	elements[elemFeFlood] = v
+	v.Add(DomSVGFEFloodElement)
+	Elements[ElemFeFlood] = v
 	v.Clear()
 
 	// <feFuncA]>
@@ -643,13 +643,13 @@ func init() {
 	// none
 	// Content Model
 	// Any number of the following elements, in any order:
-	v.AddAll(elemAnimate, elemSet)
+	v.AddAll(ElemAnimate, ElemSet)
 	// Attributes
 	v.AddAll(coreAttributes...)
 	v.AddAll(transferFunctionElementAttributes...)
 	// DOM interface
-	v.Add(domSVGFEFuncAElement)
-	elements[elemFeFuncA] = v
+	v.Add(DomSVGFEFuncAElement)
+	Elements[ElemFeFuncA] = v
 	v.Clear()
 
 	// <feFuncB>
@@ -658,13 +658,13 @@ func init() {
 	// none
 	// Content Model
 	// Any number of the following elements, in any order:
-	v.AddAll(elemAnimate, elemSet)
+	v.AddAll(ElemAnimate, ElemSet)
 	// Attributes
 	v.AddAll(coreAttributes...)
 	v.AddAll(transferFunctionElementAttributes...)
 	// DOM interface
-	v.Add(domSVGFEFuncBElement)
-	elements[elemFeFuncB] = v
+	v.Add(DomSVGFEFuncBElement)
+	Elements[ElemFeFuncB] = v
 	v.Clear()
 
 	// <feFuncG>
@@ -673,13 +673,13 @@ func init() {
 	// none
 	// Content Model
 	// Any number of the following elements, in any order:
-	v.AddAll(elemAnimate, elemSet)
+	v.AddAll(ElemAnimate, ElemSet)
 	// Attributes
 	v.AddAll(coreAttributes...)
 	v.AddAll(transferFunctionElementAttributes...)
 	// DOM interface
-	v.Add(domSVGFEFuncGElement)
-	elements[elemFeFuncG] = v
+	v.Add(DomSVGFEFuncGElement)
+	Elements[ElemFeFuncG] = v
 	v.Clear()
 
 	// <feFuncR>
@@ -688,68 +688,68 @@ func init() {
 	// none
 	// Content Model
 	// Any number of the following elements, in any order:
-	v.AddAll(elemAnimate, elemSet)
+	v.AddAll(ElemAnimate, ElemSet)
 	// Attributes
 	v.AddAll(coreAttributes...)
 	v.AddAll(transferFunctionElementAttributes...)
 	// DOM interface
-	v.Add(domSVGFEFuncRElement)
-	elements[elemFeFuncR] = v
+	v.Add(DomSVGFEFuncRElement)
+	Elements[ElemFeFuncR] = v
 	v.Clear()
 
 	// <feGaussianBlur>
 	// https://dev.w3.org/SVG/profiles/1.1F2/publish/filters.html#feGaussianBlurElement
 	// catagory
-	v.Add(cataFilterPrimitiveElement)
+	v.Add(CataFilterPrimitiveElement)
 	// Content Model
 	// Any number of the following elements, in any order:
-	v.AddAll(elemAnimate, elemSet)
+	v.AddAll(ElemAnimate, ElemSet)
 	// Attributes
 	v.AddAll(coreAttributes...)
 	v.AddAll(presentationAttributes...)
 	v.AddAll(filterPrimitiveAttributes...)
-	v.AddAll(attrClass, attrStyle, attrIn, attrStdDeviation)
+	v.AddAll(AttrClass, AttrStyle, AttrIn, AttrStdDeviation)
 	// dom interface
-	v.Add(domSVGFEGaussianBlurElement)
-	elements[elemFeGaussianBlur] = v
+	v.Add(DomSVGFEGaussianBlurElement)
+	Elements[ElemFeGaussianBlur] = v
 	v.Clear()
 
 	// <feImage>
 	// https://dev.w3.org/SVG/profiles/1.1F2/publish/filters.html#feImageElement
 	// Catagory
-	v.Add(cataFilterPrimitiveElement)
+	v.Add(CataFilterPrimitiveElement)
 	// Content model
 	// Any number of the following elements, in any order:
-	v.AddAll(elemAnimate, elemAnimateTransform, elemSet)
+	v.AddAll(ElemAnimate, ElemAnimateTransform, ElemSet)
 	// Attributes
 	v.AddAll(coreAttributes...)
 	v.AddAll(presentationAttributes...)
 	v.AddAll(filterPrimitiveAttributes...)
 	v.AddAll(xlinkAttributes...)
 	v.AddAll(
-		attrClass, attrStyle, attrExternalResourcesRequired,
-		attrPreserveAspectRatio, attrXlinkHref,
+		AttrClass, AttrStyle, AttrExternalResourcesRequired,
+		AttrPreserveAspectRatio, AttrXlinkHref,
 	)
 	// DOM interface
-	v.Add(domSVGFEImageElement)
-	elements[elemFeImage] = v
+	v.Add(DomSVGFEImageElement)
+	Elements[ElemFeImage] = v
 	v.Clear()
 
 	// <feMerge>
 	// https://dev.w3.org/SVG/profiles/1.1F2/publish/filters.html#feMergeElement
 	// Catagory
-	v.Add(cataFilterPrimitiveElement)
+	v.Add(CataFilterPrimitiveElement)
 	// Content model
 	// Any number of the following elements, in any order:
-	v.Add(elemFeMergeNode)
+	v.Add(ElemFeMergeNode)
 	// Attributes
 	v.AddAll(coreAttributes...)
 	v.AddAll(presentationAttributes...)
 	v.AddAll(filterPrimitiveAttributes...)
-	v.AddAll(attrClass, attrStyle)
+	v.AddAll(AttrClass, AttrStyle)
 	// DOM interface
-	v.Add(domSVGFEMergeElement)
-	elements[elemFeMerge] = v
+	v.Add(DomSVGFEMergeElement)
+	Elements[ElemFeMerge] = v
 	v.Clear()
 
 	// <feMergeNode>
@@ -758,70 +758,70 @@ func init() {
 	// none
 	// Content model
 	// Any number of the following elements, in any order:
-	v.AddAll(elemAnimate, elemSet)
+	v.AddAll(ElemAnimate, ElemSet)
 	// Attributes
 	v.AddAll(coreAttributes...)
 	v.AddAll(
-		attrIn,
+		AttrIn,
 	)
 	// DOM interface
-	v.Add(domSVGFEMergeNodeElement)
-	elements[elemFeMergeNode] = v
+	v.Add(DomSVGFEMergeNodeElement)
+	Elements[ElemFeMergeNode] = v
 	v.Clear()
 
 	// <feMorphology>
 	// https://dev.w3.org/SVG/profiles/1.1F2/publish/filters.html#feMorphologyElement
 	// Catagory
-	v.Add(cataFilterPrimitiveElement)
+	v.Add(CataFilterPrimitiveElement)
 	// Content model
 	// Any number of the following elements, in any order:
-	v.AddAll(elemAnimate, elemSet)
+	v.AddAll(ElemAnimate, ElemSet)
 	// Attributes
 	v.AddAll(coreAttributes...)
 	v.AddAll(presentationAttributes...)
 	v.AddAll(filterPrimitiveAttributes...)
-	v.AddAll(attrClass, attrStyle, attrIn, attrOperator, attrRadius)
+	v.AddAll(AttrClass, AttrStyle, AttrIn, AttrOperator, AttrRadius)
 	// DOM interface
-	v.Add(domSVGFEMorphologyElement)
-	elements[elemFeMorphology] = v
+	v.Add(DomSVGFEMorphologyElement)
+	Elements[ElemFeMorphology] = v
 	v.Clear()
 
 	// <feOffset>
 	// https://dev.w3.org/SVG/profiles/1.1F2/publish/filters.html#feOffsetElement
 	// Catagory
-	v.Add(cataFilterPrimitiveElement)
+	v.Add(CataFilterPrimitiveElement)
 	// Content model
 	// Any number of the following elements, in any order:
-	v.AddAll(elemAnimate, elemSet)
+	v.AddAll(ElemAnimate, ElemSet)
 	// Attributes
 	v.AddAll(coreAttributes...)
 	v.AddAll(presentationAttributes...)
 	v.AddAll(filterPrimitiveAttributes...)
-	v.AddAll(attrClass, attrStyle, attrIn, attrDx, attrDy)
+	v.AddAll(AttrClass, AttrStyle, AttrIn, AttrDx, AttrDy)
 	// DOM interface
-	v.Add(domSVGFEOffsetElement)
-	elements[elemFeOffset] = v
+	v.Add(DomSVGFEOffsetElement)
+	Elements[ElemFeOffset] = v
 	v.Clear()
 
 	// <fePointLight>
 	// https://dev.w3.org/SVG/profiles/1.1F2/publish/filters.html#fePointLightElement
 	// Catagory
-	v.Add(cataLightSourceElement)
+	v.Add(CataLightSourceElement)
 	// Content model
 	// Any number of the following elements, in any order:
-	v.AddAll(elemAnimate, elemSet)
+	v.AddAll(ElemAnimate, ElemSet)
 	// Attributes
 	v.AddAll(coreAttributes...)
-	v.AddAll(attrX, attrY, attrZ)
+	v.AddAll(AttrX, AttrY, AttrZ)
 	// DOM interface
-	v.Add(domSVGFEPointLightElement)
-	elements[elemFePointLight] = v
+	v.Add(DomSVGFEPointLightElement)
+	Elements[ElemFePointLight] = v
 	v.Clear()
 
 	// <feSpecularLighting>
 	// https://dev.w3.org/SVG/profiles/1.1F2/publish/filters.html#feSpecularLightingElement
 	// Catagory
-	v.Add(cataFilterPrimitiveElement)
+	v.Add(CataFilterPrimitiveElement)
 	// Content model
 	// Any number of descriptive elements and exactly one light
 	// source element, in any order.
@@ -832,12 +832,12 @@ func init() {
 	v.AddAll(presentationAttributes...)
 	v.AddAll(filterPrimitiveAttributes...)
 	v.AddAll(
-		attrClass, attrStyle, attrIn, attrSurfaceScale,
-		attrSpecularConstant, attrSpecularExponent,
-		attrKernelUnitLength,
+		AttrClass, AttrStyle, AttrIn, AttrSurfaceScale,
+		AttrSpecularConstant, AttrSpecularExponent,
+		AttrKernelUnitLength,
 	)
 	// DOM interface
-	v.Add(domSVGFESpecularLightingElement)
+	v.Add(DomSVGFESpecularLightingElement)
 	v.contract = append(v.contract, func(g group) error {
 		var count int
 		err := errors.New("<feSpecularLighting> only one light " +
@@ -852,63 +852,63 @@ func init() {
 		}
 		return nil
 	})
-	elements[elemFeSpecularLighting] = v
+	Elements[ElemFeSpecularLighting] = v
 	v.Clear()
 
 	// <feSpotLight>
 	// https://dev.w3.org/SVG/profiles/1.1F2/publish/filters.html#feSpotLightElement
 	// Catagory
-	v.Add(cataLightSourceElement)
+	v.Add(CataLightSourceElement)
 	// Content model
 	// Any number of the following elements, in any order:
-	v.AddAll(elemAnimate, elemSet)
+	v.AddAll(ElemAnimate, ElemSet)
 	// Attributes
 	v.AddAll(coreAttributes...)
 	v.AddAll(
-		attrX, attrY, attrZ, attrPointsAtX, attrPointsAtY,
-		attrPointsAtZ, attrSpecularExponent,
-		attrLimitingConeAngle,
+		AttrX, AttrY, AttrZ, AttrPointsAtX, AttrPointsAtY,
+		AttrPointsAtZ, AttrSpecularExponent,
+		AttrLimitingConeAngle,
 	)
 	// DOM interface
-	v.Add(domSVGFESpotLightElement)
-	elements[elemFeSpotLight] = v
+	v.Add(DomSVGFESpotLightElement)
+	Elements[ElemFeSpotLight] = v
 	v.Clear()
 
 	// <feTile>
 	// https://dev.w3.org/SVG/profiles/1.1F2/publish/filters.html#feTileElement
 	// Catagory
-	v.Add(cataFilterPrimitiveElement)
+	v.Add(CataFilterPrimitiveElement)
 	// Content model
 	// Any number of the following elements, in any order:
-	v.AddAll(elemAnimate, elemSet)
+	v.AddAll(ElemAnimate, ElemSet)
 	// Attributes
 	v.AddAll(coreAttributes...)
 	v.AddAll(presentationAttributes...)
 	v.AddAll(filterPrimitiveAttributes...)
-	v.AddAll(attrClass, attrStyle, attrIn)
+	v.AddAll(AttrClass, AttrStyle, AttrIn)
 	// DOM interface
-	v.Add(domSVGFETileElement)
-	elements[elemFeTile] = v
+	v.Add(DomSVGFETileElement)
+	Elements[ElemFeTile] = v
 	v.Clear()
 
 	// <feTurbulence>
 	// https://dev.w3.org/SVG/profiles/1.1F2/publish/filters.html#feTurbulenceElement
 	// Catagory
-	v.Add(cataFilterPrimitiveElement)
+	v.Add(CataFilterPrimitiveElement)
 	// Content model
 	// Any number of the following elements, in any order:
-	v.AddAll(elemAnimate, elemSet)
+	v.AddAll(ElemAnimate, ElemSet)
 	// Attributes
 	v.AddAll(coreAttributes...)
 	v.AddAll(presentationAttributes...)
 	v.AddAll(filterPrimitiveAttributes...)
 	v.AddAll(
-		attrClass, attrStyle, attrBaseFrequency, attrNumOctaves,
-		attrSeed, attrStitchTiles, attrType,
+		AttrClass, AttrStyle, AttrBaseFrequency, AttrNumOctaves,
+		AttrSeed, AttrStitchTiles, AttrType,
 	)
 	// DOM interface
-	v.Add(domSVGFETurbulenceElement)
-	elements[elemFeTurbulence] = v
+	v.Add(DomSVGFETurbulenceElement)
+	Elements[ElemFeTurbulence] = v
 	v.Clear()
 
 	// <filter>
@@ -919,19 +919,19 @@ func init() {
 	// Any number of the following elements, in any order:
 	v.AddAll(descriptiveElements...)
 	v.AddAll(filterPrimiveElements...)
-	v.AddAll(elemAnimate, elemSet)
+	v.AddAll(ElemAnimate, ElemSet)
 	// Attributes
 	v.AddAll(coreAttributes...)
 	v.AddAll(presentationAttributes...)
 	v.AddAll(xlinkAttributes...)
 	v.AddAll(
-		attrClass, attrStyle, attrExternalResourcesRequired,
-		attrX, attrY, attrWidth, attrHeight, attrFilterRes,
-		attrFilterUnits, attrPrimitiveUnits, attrXlinkHref,
+		AttrClass, AttrStyle, AttrExternalResourcesRequired,
+		AttrX, AttrY, AttrWidth, AttrHeight, AttrFilterRes,
+		AttrFilterUnits, AttrPrimitiveUnits, AttrXlinkHref,
 	)
 	// DOM interface
-	v.Add(domSVGFilterElement)
-	elements[elemFilter] = v
+	v.Add(DomSVGFilterElement)
+	Elements[ElemFilter] = v
 	v.Clear()
 
 	// <font>
@@ -942,20 +942,20 @@ func init() {
 	// Any number of the following elements, in any order:
 	v.AddAll(descriptiveElements...)
 	v.AddAll(
-		elemFontFace, elemGlyph, elemHkern, elemMissingGlyph,
-		elemVkern,
+		ElemFontFace, ElemGlyph, ElemHkern, ElemMissingGlyph,
+		ElemVkern,
 	)
 	// Attributes
 	v.AddAll(coreAttributes...)
 	v.AddAll(presentationAttributes...)
 	v.AddAll(
-		attrClass, attrStyle, attrExternalResourcesRequired,
-		attrHorizOriginX, attrHorizOriginY, attrHorizAdvX,
-		attrVertOriginX, attrVertOriginY, attrVertAdvY,
+		AttrClass, AttrStyle, AttrExternalResourcesRequired,
+		AttrHorizOriginX, AttrHorizOriginY, AttrHorizAdvX,
+		AttrVertOriginX, AttrVertOriginY, AttrVertAdvY,
 	)
 	// DOM interface
-	v.Add(domSVGFontElement)
-	elements[elemFont] = v
+	v.Add(DomSVGFontElement)
+	Elements[ElemFont] = v
 	v.Clear()
 
 	// <font-face>
@@ -966,30 +966,30 @@ func init() {
 	// Any number of descriptive elements and at most one
 	// ‘font-face-src’ element, in any order.
 	v.AddAll(descriptiveElements...)
-	v.Add(elemFontFaceSrc)
+	v.Add(ElemFontFaceSrc)
 	// Attributes
 	v.AddAll(coreAttributes...)
 	v.AddAll(
-		attrFontFamily, attrFontStyle, attrFontVariant,
-		attrFontWeight, attrFontStretch, attrFontSize,
-		attrUnicodeRange, attrUnitsPerEm, attrPanose1,
-		attrStemv, attrStemh, attrSlope, attrCapHeight,
-		attrXHeight, attrAccentHeight, attrAscent, attrDescent,
-		attrWidths, attrBbox, attrIdeographic, attrAlphabetic,
-		attrMathematical, attrHanging, attrVIdeographic,
-		attrVAlphabetic, attrVMathematical, attrVHanging,
-		attrUnderlinePosition, attrUnderlineThickness,
-		attrStrikethroughPosition, attrStrikethroughThickness,
-		attrOverlinePosition, attrOverlineThickness,
+		AttrFontFamily, AttrFontStyle, AttrFontVariant,
+		AttrFontWeight, AttrFontStretch, AttrFontSize,
+		AttrUnicodeRange, AttrUnitsPerEm, AttrPanose1,
+		AttrStemv, AttrStemh, AttrSlope, AttrCapHeight,
+		AttrXHeight, AttrAccentHeight, AttrAscent, AttrDescent,
+		AttrWidths, AttrBbox, AttrIdeographic, AttrAlphabetic,
+		AttrMathematical, AttrHanging, AttrVIdeographic,
+		AttrVAlphabetic, AttrVMathematical, AttrVHanging,
+		AttrUnderlinePosition, AttrUnderlineThickness,
+		AttrStrikethroughPosition, AttrStrikethroughThickness,
+		AttrOverlinePosition, AttrOverlineThickness,
 	)
 	// DOM interface
-	v.Add(domSVGFontFaceElement)
+	v.Add(DomSVGFontFaceElement)
 	v.contract = append(v.contract, func(g group) error {
 		// Any number of descriptive elements and at most one
 		// ‘font-face-src’ element, in any order.
 		return nil
 	})
-	elements[elemFontFace] = v
+	Elements[ElemFontFace] = v
 	v.Clear()
 
 	// <font-face-format>
@@ -1000,14 +1000,14 @@ func init() {
 	// empty
 	// Attributes
 	v.AddAll(coreAttributes...)
-	v.Add(attrString)
+	v.Add(AttrString)
 	// DOM interface
-	v.Add(domSVGFontFaceFormatElement)
+	v.Add(DomSVGFontFaceFormatElement)
 	v.contract = append(v.contract, func(g group) error {
 		// should be empty
 		return nil
 	})
-	elements[elemFontFaceFormat] = v
+	Elements[ElemFontFaceFormat] = v
 	v.Clear()
 
 	// <font-face-name>
@@ -1018,14 +1018,14 @@ func init() {
 	// empty
 	// Attributes
 	v.AddAll(coreAttributes...)
-	v.Add(attrName)
+	v.Add(AttrName)
 	// DOM interface
-	v.Add(domSVGFontFaceNameElement)
+	v.Add(DomSVGFontFaceNameElement)
 	v.contract = append(v.contract, func(g group) error {
 		// empty
 		return nil
 	})
-	elements[elemFontFaceName] = v
+	Elements[ElemFontFaceName] = v
 	v.Clear()
 
 	// <font-face-src>
@@ -1034,17 +1034,17 @@ func init() {
 	// none
 	// Content model
 	// One or more of the following elements, in any order:
-	v.AddAll(elemFontFaceName, elemFontFaceUri)
+	v.AddAll(ElemFontFaceName, ElemFontFaceUri)
 	// Attributes
 	v.AddAll(coreAttributes...)
 	// DOM interface
-	v.Add(domSVGFontFaceSrcElement)
+	v.Add(DomSVGFontFaceSrcElement)
 	v.contract = append(v.contract, func(g group) error {
 		// One or more of the following elements, in any order:
-		//	elemFontFaceName, elemFontFaceUri
+		//	ElemFontFaceName, ElemFontFaceUri
 		return nil
 	})
-	elements[elemFontFaceSrc] = v
+	Elements[ElemFontFaceSrc] = v
 	v.Clear()
 
 	// <font-face-uri>
@@ -1053,14 +1053,14 @@ func init() {
 	// none
 	// Content model
 	// Any number of the following elements, in any order:
-	v.Add(elemFontFaceFormat)
+	v.Add(ElemFontFaceFormat)
 	// Attributes
 	v.AddAll(coreAttributes...)
 	v.AddAll(xlinkAttributes...)
-	v.Add(attrXlinkHref)
+	v.Add(AttrXlinkHref)
 	// DOM interface
-	v.AddAll(domSVGFontFaceUriElement)
-	elements[elemFontFaceUri] = v
+	v.AddAll(DomSVGFontFaceUriElement)
+	Elements[ElemFontFaceUri] = v
 	v.Clear()
 
 	// <foreignObject>
@@ -1075,12 +1075,12 @@ func init() {
 	v.AddAll(graphicalEventAttributes...)
 	v.AddAll(presentationAttributes...)
 	v.AddAll(
-		attrClass, attrStyle, attrExternalResourcesRequired,
-		attrTransform, attrX, attrY, attrWidth, attrHeight,
+		AttrClass, AttrStyle, AttrExternalResourcesRequired,
+		AttrTransform, AttrX, AttrY, AttrWidth, AttrHeight,
 	)
 	// DOM interface
-	v.Add(domSVGForeignObjectElement)
-	elements[elemForeignObject] = v
+	v.Add(DomSVGForeignObjectElement)
+	Elements[ElemForeignObject] = v
 	v.Clear()
 
 	// <foreignObject>
@@ -1095,18 +1095,18 @@ func init() {
 	v.AddAll(graphicalEventAttributes...)
 	v.AddAll(presentationAttributes...)
 	v.AddAll(
-		attrClass, attrStyle, attrExternalResourcesRequired,
-		attrTransform, attrX, attrY, attrWidth, attrHeight,
+		AttrClass, AttrStyle, AttrExternalResourcesRequired,
+		AttrTransform, AttrX, AttrY, AttrWidth, AttrHeight,
 	)
 	// DOM interface
-	v.Add(domSVGForeignObjectElement)
-	elements[elemForeignObject] = v
+	v.Add(DomSVGForeignObjectElement)
+	Elements[ElemForeignObject] = v
 	v.Clear()
 
 	// <g>
 	// https://dev.w3.org/SVG/profiles/1.1F2/publish/struct.html#GElement
 	// Catagory
-	v.AddAll(cataContainerElement, cataStructuralElement)
+	v.AddAll(CataContainerElement, CataStructuralElement)
 	// Content model
 	// Any number of the following elements, in any order:
 	v.AddAll(animationElements...)
@@ -1115,11 +1115,11 @@ func init() {
 	v.AddAll(structuralElements...)
 	v.AddAll(gradientElements...)
 	v.AddAll(
-		elemA, elemAltGlyphDef, elemClipPath, elemColorProfile,
-		elemCursor, elemFilter, elemFont, elemFontFace,
-		elemForeignObject, elemImage, elemMarker, elemMask,
-		elemPattern, elemScript, elemStyle, elemSwitch,
-		elemText, elemView,
+		ElemA, ElemAltGlyphDef, ElemClipPath, ElemColorProfile,
+		ElemCursor, ElemFilter, ElemFont, ElemFontFace,
+		ElemForeignObject, ElemImage, ElemMarker, ElemMask,
+		ElemPattern, ElemScript, ElemStyle, ElemSwitch,
+		ElemText, ElemView,
 	)
 	// Attributes
 	v.AddAll(conditionalProcessingAttributes...)
@@ -1127,18 +1127,18 @@ func init() {
 	v.AddAll(graphicalEventAttributes...)
 	v.AddAll(presentationAttributes...)
 	v.AddAll(
-		attrClass, attrStyle, attrExternalResourcesRequired,
-		attrTransform,
+		AttrClass, AttrStyle, AttrExternalResourcesRequired,
+		AttrTransform,
 	)
 	// DOM interface
-	v.Add(domSVGGElement)
-	elements[elemG] = v
+	v.Add(DomSVGGElement)
+	Elements[ElemG] = v
 	v.Clear()
 
 	// <glyph>
 	// https://dev.w3.org/SVG/profiles/1.1F2/publish/fonts.html#GlyphElement
 	// Catagory
-	v.Add(cataContainerElement)
+	v.Add(CataContainerElement)
 	//
 	// Content model
 	// Any number of the following elements, in any order:
@@ -1148,24 +1148,24 @@ func init() {
 	v.AddAll(structuralElements...)
 	v.AddAll(gradientElements...)
 	v.AddAll(
-		elemA, elemAltGlyphDef, elemClipPath, elemColorProfile,
-		elemCursor, elemFilter, elemFont, elemFontFace,
-		elemForeignObject, elemImage, elemMarker, elemMask,
-		elemPattern, elemScript, elemStyle, elemSwitch,
-		elemText, elemView,
+		ElemA, ElemAltGlyphDef, ElemClipPath, ElemColorProfile,
+		ElemCursor, ElemFilter, ElemFont, ElemFontFace,
+		ElemForeignObject, ElemImage, ElemMarker, ElemMask,
+		ElemPattern, ElemScript, ElemStyle, ElemSwitch,
+		ElemText, ElemView,
 	)
 	// Attributes
 	v.AddAll(coreAttributes...)
 	v.AddAll(presentationAttributes...)
 	v.AddAll(
-		attrClass, attrStyle, attrD, attrHorizAdvX,
-		attrVertOriginX, attrVertOriginY, attrVertAdvY,
-		attrUnicode, attrGlyphName, attrOrientation,
-		attrArabicForm, attrLang,
+		AttrClass, AttrStyle, AttrD, AttrHorizAdvX,
+		AttrVertOriginX, AttrVertOriginY, AttrVertAdvY,
+		AttrUnicode, AttrGlyphName, AttrOrientation,
+		AttrArabicForm, AttrLang,
 	)
 	// DOM interface
-	v.Add(domSVGGlyphElement)
-	elements[elemGlyph] = v
+	v.Add(DomSVGGlyphElement)
+	Elements[ElemGlyph] = v
 	v.Clear()
 
 	// <glyphRef>
@@ -1179,12 +1179,12 @@ func init() {
 	v.AddAll(presentationAttributes...)
 	v.AddAll(xlinkAttributes...)
 	v.AddAll(
-		attrClass, attrStyle, attrX, attrY, attrDx, attrDy,
-		attrGlyphRef, attrFormat, attrXlinkHref,
+		AttrClass, AttrStyle, AttrX, AttrY, AttrDx, AttrDy,
+		AttrGlyphRef, AttrFormat, AttrXlinkHref,
 	)
 	// DOM interface
-	v.Add(domSVGGlyphRefElement)
-	elements[elemGlyphRef] = v
+	v.Add(DomSVGGlyphRefElement)
+	Elements[ElemGlyphRef] = v
 	v.Clear()
 
 	// <hkern>
@@ -1195,16 +1195,16 @@ func init() {
 	// empty
 	// Attributes
 	v.AddAll(coreAttributes...)
-	v.AddAll(attrU1, attrG1, attrU2, attrG2, attrK)
+	v.AddAll(AttrU1, AttrG1, AttrU2, AttrG2, AttrK)
 	// DOM interface
-	v.Add(domSVGHKernElement)
-	elements[elemHkern] = v
+	v.Add(DomSVGHKernElement)
+	Elements[ElemHkern] = v
 	v.Clear()
 
 	// <image>
 	// https://dev.w3.org/SVG/profiles/1.1F2/publish/struct.html#ImageElement
 	// Catagory
-	v.AddAll(cataGraphicsElement, cataGraphicsReferencingElement)
+	v.AddAll(CataGraphicsElement, CataGraphicsReferencingElement)
 	// Content model
 	// Any number of the following elements, in any order:
 	v.AddAll(animationElements...)
@@ -1216,21 +1216,21 @@ func init() {
 	v.AddAll(xlinkAttributes...)
 	v.AddAll(presentationAttributes...)
 	v.AddAll(
-		attrClass, attrStyle, attrExternalResourcesRequired,
-		attrPreserveAspectRatio, attrTransform, attrX, attrY,
-		attrWidth, attrHeight, attrXlinkHref,
+		AttrClass, AttrStyle, AttrExternalResourcesRequired,
+		AttrPreserveAspectRatio, AttrTransform, AttrX, AttrY,
+		AttrWidth, AttrHeight, AttrXlinkHref,
 	)
 	// DOM interface
-	v.Add(domSVGImageElement)
-	elements[elemImage] = v
+	v.Add(DomSVGImageElement)
+	Elements[ElemImage] = v
 	v.Clear()
 
 	// <line>
 	// https://dev.w3.org/SVG/profiles/1.1F2/publish/shapes.html#LineElement
 	// Catagory
 	v.AddAll(
-		cataBasicShapeElement, cataGraphicsElement,
-		cataShapeElement,
+		CataBasicShapeElement, CataGraphicsElement,
+		CataShapeElement,
 	)
 	// Content model
 	// Any number of the following elements, in any order:
@@ -1242,52 +1242,52 @@ func init() {
 	v.AddAll(graphicalEventAttributes...)
 	v.AddAll(presentationAttributes...)
 	v.AddAll(
-		attrClass, attrStyle, attrExternalResourcesRequired,
-		attrTransform, attrX1, attrY1, attrX2, attrY2,
+		AttrClass, AttrStyle, AttrExternalResourcesRequired,
+		AttrTransform, AttrX1, AttrY1, AttrX2, AttrY2,
 	)
 	// DOM interface
-	v.Add(domSVGLineElement)
+	v.Add(DomSVGLineElement)
 	v.contract = append(v.contract, func(g group) error {
 		// Any number of the following elements, in any order:
 		// descriptive elements
 		// animation elements
 		return nil
 	})
-	elements[elemLine] = v
+	Elements[ElemLine] = v
 	v.Clear()
 
 	// <linearGradient>
 	// https://dev.w3.org/SVG/profiles/1.1F2/publish/pservers.html#LinearGradientElement
 	// Catagory
-	v.Add(cataGradientElement)
+	v.Add(CataGradientElement)
 	// Content model
 	// Any number of the following elements, in any order:
 	v.AddAll(descriptiveElements...)
-	v.AddAll(elemAnimate, elemAnimateTransform, elemSet, elemStop)
+	v.AddAll(ElemAnimate, ElemAnimateTransform, ElemSet, ElemStop)
 	// Attributes
 	v.AddAll(coreAttributes...)
 	v.AddAll(presentationAttributes...)
 	v.AddAll(xlinkAttributes...)
 	v.AddAll(
-		attrClass, attrStyle, attrExternalResourcesRequired,
-		attrX1, attrY1, attrX2, attrY2, attrGradientUnits,
-		attrGradientTransform, attrSpreadMethod, attrXlinkHref,
+		AttrClass, AttrStyle, AttrExternalResourcesRequired,
+		AttrX1, AttrY1, AttrX2, AttrY2, AttrGradientUnits,
+		AttrGradientTransform, AttrSpreadMethod, AttrXlinkHref,
 	)
 	// DOM interface
-	v.Add(domSVGLinearGradientElement)
+	v.Add(DomSVGLinearGradientElement)
 	v.contract = append(v.contract, func(g group) error {
 		// Any number of the following elements, in any order:
 		// descriptive elements
 		// ‘animate’ ‘animateTransform’ ‘set’ ‘stop’
 		return nil
 	})
-	elements[elemLinearGradient] = v
+	Elements[ElemLinearGradient] = v
 	v.Clear()
 
 	// <marker>
 	// https://dev.w3.org/SVG/profiles/1.1F2/publish/painting.html#MarkerElement
 	// Catagory
-	v.Add(cataContainerElement)
+	v.Add(CataContainerElement)
 	// Content model
 	// Any number of the following elements, in any order:
 	v.AddAll(animationElements...)
@@ -1296,23 +1296,23 @@ func init() {
 	v.AddAll(structuralElements...)
 	v.AddAll(gradientElements...)
 	v.AddAll(
-		elemA, elemAltGlyphDef, elemClipPath, elemColorProfile,
-		elemCursor, elemFilter, elemFont, elemFontFace,
-		elemForeignObject, elemImage, elemMarker, elemMask,
-		elemPattern, elemScript, elemStyle, elemSwitch,
-		elemText, elemView,
+		ElemA, ElemAltGlyphDef, ElemClipPath, ElemColorProfile,
+		ElemCursor, ElemFilter, ElemFont, ElemFontFace,
+		ElemForeignObject, ElemImage, ElemMarker, ElemMask,
+		ElemPattern, ElemScript, ElemStyle, ElemSwitch,
+		ElemText, ElemView,
 	)
 	// Attributes
 	v.AddAll(coreAttributes...)
 	v.AddAll(presentationAttributes...)
 	v.AddAll(
-		attrClass, attrStyle, attrExternalResourcesRequired,
-		attrViewBox, attrPreserveAspectRatio, attrRefX,
-		attrRefY, attrMarkerUnits, attrMarkerWidth,
-		attrMarkerHeight, attrOrient,
+		AttrClass, AttrStyle, AttrExternalResourcesRequired,
+		AttrViewBox, AttrPreserveAspectRatio, AttrRefX,
+		AttrRefY, AttrMarkerUnits, AttrMarkerWidth,
+		AttrMarkerHeight, AttrOrient,
 	)
 	// DOM interface
-	v.Add(domSVGMarkerElement)
+	v.Add(DomSVGMarkerElement)
 	v.contract = append(v.contract, func(g group) error {
 		// Any number of the following elements, in any order:
 		// animationElements
@@ -1321,21 +1321,21 @@ func init() {
 		// structuralElements
 		// gradientElements
 		//
-		// 	elemA, elemAltGlyphDef, elemClipPath,
-		// 	elemColorProfile, elemCursor, elemFilter,
-		// 	elemFont, elemFontFace, elemForeignObject,
-		// 	elemImage, elemMarker, elemMask, elemPattern,
-		// 	elemScript, elemStyle, elemSwitch, elemText,
-		// 	elemView,
+		// 	ElemA, ElemAltGlyphDef, ElemClipPath,
+		// 	ElemColorProfile, ElemCursor, ElemFilter,
+		// 	ElemFont, ElemFontFace, ElemForeignObject,
+		// 	ElemImage, ElemMarker, ElemMask, ElemPattern,
+		// 	ElemScript, ElemStyle, ElemSwitch, ElemText,
+		// 	ElemView,
 		return nil
 	})
-	elements[elemMarker] = v
+	Elements[ElemMarker] = v
 	v.Clear()
 
 	// <mask>
 	// https://dev.w3.org/SVG/profiles/1.1F2/publish/masking.html#MaskElement
 	// Catagory
-	v.Add(cataContainerElement)
+	v.Add(CataContainerElement)
 	//
 	// Content model
 	// Any number of the following elements, in any order:
@@ -1345,44 +1345,44 @@ func init() {
 	v.AddAll(structuralElements...)
 	v.AddAll(gradientElements...)
 	v.AddAll(
-		elemA, elemAltGlyphDef, elemClipPath, elemColorProfile,
-		elemCursor, elemFilter, elemFont, elemFontFace,
-		elemForeignObject, elemImage, elemMarker, elemMask,
-		elemPattern, elemScript, elemStyle, elemSwitch,
-		elemText, elemView,
+		ElemA, ElemAltGlyphDef, ElemClipPath, ElemColorProfile,
+		ElemCursor, ElemFilter, ElemFont, ElemFontFace,
+		ElemForeignObject, ElemImage, ElemMarker, ElemMask,
+		ElemPattern, ElemScript, ElemStyle, ElemSwitch,
+		ElemText, ElemView,
 	)
 	// Attributes
 	v.AddAll(conditionalProcessingAttributes...)
 	v.AddAll(coreAttributes...)
 	v.AddAll(presentationAttributes...)
 	v.AddAll(
-		attrClass, attrStyle, attrExternalResourcesRequired,
-		attrX, attrY, attrWidth, attrHeight, attrMaskUnits,
-		attrMaskContentUnits,
+		AttrClass, AttrStyle, AttrExternalResourcesRequired,
+		AttrX, AttrY, AttrWidth, AttrHeight, AttrMaskUnits,
+		AttrMaskContentUnits,
 	)
 	// DOM interface
-	v.Add(domSVGMaskElement)
-	elements[elemMask] = v
+	v.Add(DomSVGMaskElement)
+	Elements[ElemMask] = v
 	v.Clear()
 
 	// <metadata>
 	// https://dev.w3.org/SVG/profiles/1.1F2/publish/metadata.html#MetadataElement
 	// Catagory
-	v.Add(cataDescriptiveElement)
+	v.Add(CataDescriptiveElement)
 	//
 	// Content model
 	// Any elements or character data.
 	// Attributes
 	v.AddAll(coreAttributes...)
 	// DOM interface
-	v.Add(domSVGMetadataElement)
-	elements[elemMetadata] = v
+	v.Add(DomSVGMetadataElement)
+	Elements[ElemMetadata] = v
 	v.Clear()
 
 	// <missing-glyph>
 	// https://dev.w3.org/SVG/profiles/1.1F2/publish/fonts.html#MissingGlyphElement
 	// Catagory
-	v.Add(cataContainerElement)
+	v.Add(CataContainerElement)
 	// Content model
 	// Any number of the following elements, in any order:
 	v.AddAll(animationElements...)
@@ -1391,22 +1391,22 @@ func init() {
 	v.AddAll(structuralElements...)
 	v.AddAll(gradientElements...)
 	v.AddAll(
-		elemA, elemAltGlyphDef, elemClipPath, elemColorProfile,
-		elemCursor, elemFilter, elemFont, elemFontFace,
-		elemForeignObject, elemImage, elemMarker, elemMask,
-		elemPattern, elemScript, elemStyle, elemSwitch,
-		elemText, elemView,
+		ElemA, ElemAltGlyphDef, ElemClipPath, ElemColorProfile,
+		ElemCursor, ElemFilter, ElemFont, ElemFontFace,
+		ElemForeignObject, ElemImage, ElemMarker, ElemMask,
+		ElemPattern, ElemScript, ElemStyle, ElemSwitch,
+		ElemText, ElemView,
 	)
 	// Attributes
 	v.AddAll(coreAttributes...)
 	v.AddAll(presentationAttributes...)
 	v.AddAll(
-		attrClass, attrStyle, attrD, attrHorizAdvX,
-		attrVertOriginX, attrVertOriginY, attrVertAdvY,
+		AttrClass, AttrStyle, AttrD, AttrHorizAdvX,
+		AttrVertOriginX, AttrVertOriginY, AttrVertAdvY,
 	)
 	// DOM interface
-	v.Add(domSVGMissingGlyphElement)
-	elements[elemMissingGlyph] = v
+	v.Add(DomSVGMissingGlyphElement)
+	Elements[ElemMissingGlyph] = v
 	v.Clear()
 
 	// <mpath>
@@ -1419,10 +1419,10 @@ func init() {
 	// Attributes
 	v.AddAll(coreAttributes...)
 	v.AddAll(xlinkAttributes...)
-	v.AddAll(attrExternalResourcesRequired, attrXlinkHref)
+	v.AddAll(AttrExternalResourcesRequired, AttrXlinkHref)
 	// DOM interface
-	v.Add(domSVGMPathElement)
-	elements[elemMpath] = v
+	v.Add(DomSVGMPathElement)
+	Elements[ElemMpath] = v
 	v.Clear()
 
 	// <path>
@@ -1440,18 +1440,18 @@ func init() {
 	v.AddAll(graphicalEventAttributes...)
 	v.AddAll(presentationAttributes...)
 	v.AddAll(
-		attrClass, attrStyle, attrExternalResourcesRequired,
-		attrTransform, attrD,
+		AttrClass, AttrStyle, AttrExternalResourcesRequired,
+		AttrTransform, AttrD,
 	)
 	// DOM interface
-	v.Add(domSVGPathElement)
-	elements[elemPath] = v
+	v.Add(DomSVGPathElement)
+	Elements[ElemPath] = v
 	v.Clear()
 
 	// <pattern>
 	// https://dev.w3.org/SVG/profiles/1.1F2/publish/pservers.html#PatternElement
 	// Catagory
-	v.Add(cataContainerElement)
+	v.Add(CataContainerElement)
 	// Content model
 	// Any number of the following elements, in any order:
 	v.AddAll(animationElements...)
@@ -1460,11 +1460,11 @@ func init() {
 	v.AddAll(structuralElements...)
 	v.AddAll(gradientElements...)
 	v.AddAll(
-		elemA, elemAltGlyphDef, elemClipPath, elemColorProfile,
-		elemCursor, elemFilter, elemFont, elemFontFace,
-		elemForeignObject, elemImage, elemMarker, elemMask,
-		elemPattern, elemScript, elemStyle, elemSwitch,
-		elemText, elemView,
+		ElemA, ElemAltGlyphDef, ElemClipPath, ElemColorProfile,
+		ElemCursor, ElemFilter, ElemFont, ElemFontFace,
+		ElemForeignObject, ElemImage, ElemMarker, ElemMask,
+		ElemPattern, ElemScript, ElemStyle, ElemSwitch,
+		ElemText, ElemView,
 	)
 	// Attributes
 	v.AddAll(conditionalProcessingAttributes...)
@@ -1472,23 +1472,23 @@ func init() {
 	v.AddAll(presentationAttributes...)
 	v.AddAll(xlinkAttributes...)
 	v.AddAll(
-		attrClass, attrStyle, attrExternalResourcesRequired,
-		attrViewBox, attrPreserveAspectRatio, attrX, attrY,
-		attrWidth, attrHeight, attrPatternUnits,
-		attrPatternContentUnits, attrPatternTransform,
-		attrXlinkHref,
+		AttrClass, AttrStyle, AttrExternalResourcesRequired,
+		AttrViewBox, AttrPreserveAspectRatio, AttrX, AttrY,
+		AttrWidth, AttrHeight, AttrPatternUnits,
+		AttrPatternContentUnits, AttrPatternTransform,
+		AttrXlinkHref,
 	)
 	// DOM interface
-	v.Add(domSVGPatternElement)
-	elements[elemPattern] = v
+	v.Add(DomSVGPatternElement)
+	Elements[ElemPattern] = v
 	v.Clear()
 
 	// <polygon>
 	// https://dev.w3.org/SVG/profiles/1.1F2/publish/shapes.html#PolygonElement
 	// Catagory
 	v.AddAll(
-		cataBasicShapeElement, cataGraphicsElement,
-		cataShapeElement,
+		CataBasicShapeElement, CataGraphicsElement,
+		CataShapeElement,
 	)
 	// Content model
 	// Any number of the following elements, in any order:
@@ -1500,19 +1500,19 @@ func init() {
 	v.AddAll(graphicalEventAttributes...)
 	v.AddAll(presentationAttributes...)
 	v.AddAll(
-		attrClass, attrStyle, attrExternalResourcesRequired,
-		attrTransform, attrPoints,
+		AttrClass, AttrStyle, AttrExternalResourcesRequired,
+		AttrTransform, AttrPoints,
 	)
 	// DOM interface
-	v.Add(domSVGPolygonElement)
-	elements[elemPolygon] = v
+	v.Add(DomSVGPolygonElement)
+	Elements[ElemPolygon] = v
 	v.Clear()
 
 	// <polyline>
 	// Catagory
 	v.AddAll(
-		cataBasicShapeElement, cataGraphicsElement,
-		cataShapeElement,
+		CataBasicShapeElement, CataGraphicsElement,
+		CataShapeElement,
 	)
 	// Content model
 	// Any number of the following elements, in any order:
@@ -1524,43 +1524,43 @@ func init() {
 	v.AddAll(graphicalEventAttributes...)
 	v.AddAll(presentationAttributes...)
 	v.AddAll(
-		attrClass, attrStyle, attrExternalResourcesRequired,
-		attrTransform, attrPoints,
+		AttrClass, AttrStyle, AttrExternalResourcesRequired,
+		AttrTransform, AttrPoints,
 	)
 	// DOM interface
-	v.Add(domSVGPolylineElement)
-	elements[elemPolyline] = v
+	v.Add(DomSVGPolylineElement)
+	Elements[ElemPolyline] = v
 	v.Clear()
 
 	// <radialGradient>
 	// https://dev.w3.org/SVG/profiles/1.1F2/publish/pservers.html#RadialGradientElement
 	// Catagory
-	v.Add(cataGradientElement)
+	v.Add(CataGradientElement)
 	// Content model
 	// Any number of the following elements, in any order:
 	v.AddAll(descriptiveElements...)
-	v.AddAll(elemAnimate, elemAnimateTransform, elemSet, elemStop)
+	v.AddAll(ElemAnimate, ElemAnimateTransform, ElemSet, ElemStop)
 	// Attributes
 	v.AddAll(coreAttributes...)
 	v.AddAll(presentationAttributes...)
 	v.AddAll(xlinkAttributes...)
 	v.AddAll(
-		attrClass, attrStyle, attrExternalResourcesRequired,
-		attrCx, attrCy, attrR, attrFx, attrFy,
-		attrGradientUnits, attrGradientTransform,
-		attrSpreadMethod, attrXlinkHref,
+		AttrClass, AttrStyle, AttrExternalResourcesRequired,
+		AttrCx, AttrCy, AttrR, AttrFx, AttrFy,
+		AttrGradientUnits, AttrGradientTransform,
+		AttrSpreadMethod, AttrXlinkHref,
 	)
 	// DOM interface
-	v.Add(domSVGRadialGradientElement)
-	elements[elemRadialGradient] = v
+	v.Add(DomSVGRadialGradientElement)
+	Elements[ElemRadialGradient] = v
 	v.Clear()
 
 	// <rect>
 	// https://dev.w3.org/SVG/profiles/1.1F2/publish/shapes.html#RectElement
 	// Catagory
 	v.AddAll(
-		cataBasicShapeElement, cataGraphicsElement,
-		cataShapeElement,
+		CataBasicShapeElement, CataGraphicsElement,
+		CataShapeElement,
 	)
 	// Content model
 	// Any number of the following elements, in any order:
@@ -1572,13 +1572,13 @@ func init() {
 	v.AddAll(graphicalEventAttributes...)
 	v.AddAll(presentationAttributes...)
 	v.AddAll(
-		attrClass, attrStyle, attrExternalResourcesRequired,
-		attrTransform, attrX, attrY, attrWidth, attrHeight,
-		attrRx, attrRy,
+		AttrClass, AttrStyle, AttrExternalResourcesRequired,
+		AttrTransform, AttrX, AttrY, AttrWidth, AttrHeight,
+		AttrRx, AttrRy,
 	)
 	// DOM interface
-	v.Add(domSVGRectElement)
-	elements[elemRect] = v
+	v.Add(DomSVGRectElement)
+	Elements[ElemRect] = v
 	v.Clear()
 
 	// <script>
@@ -1590,16 +1590,16 @@ func init() {
 	// Attributes
 	v.AddAll(coreAttributes...)
 	v.AddAll(xlinkAttributes...)
-	v.AddAll(attrExternalResourcesRequired, attrType, attrXlinkHref)
+	v.AddAll(AttrExternalResourcesRequired, AttrType, AttrXlinkHref)
 	// DOM interface
-	v.Add(domSVGScriptElement)
-	elements[elemScript] = v
+	v.Add(DomSVGScriptElement)
+	Elements[ElemScript] = v
 	v.Clear()
 
 	// <set>
 	// https://dev.w3.org/SVG/profiles/1.1F2/publish/animate.html#SetElement
 	// Catagory
-	v.Add(cataAnimationElement)
+	v.Add(CataAnimationElement)
 	//
 	// Content model
 	// Any number of the following elements, in any order:
@@ -1612,12 +1612,12 @@ func init() {
 	v.AddAll(animationAttributeTargetAttributes...)
 	v.AddAll(animationTimingAttributes...)
 	v.AddAll(
-		attrExternalResourcesRequired,
-		attrTo,
+		AttrExternalResourcesRequired,
+		AttrTo,
 	)
 	// DOM interface
-	v.Add(domSVGSetElement)
-	elements[elemSet] = v
+	v.Add(DomSVGSetElement)
+	Elements[ElemSet] = v
 	v.Clear()
 
 	// <stop>
@@ -1626,14 +1626,14 @@ func init() {
 	// none
 	// Content model
 	// Any number of the following elements, in any order:
-	v.AddAll(elemAnimate, elemAnimateColor, elemSet)
+	v.AddAll(ElemAnimate, ElemAnimateColor, ElemSet)
 	// Attributes
 	v.AddAll(coreAttributes...)
 	v.AddAll(presentationAttributes...)
-	v.AddAll(attrClass, attrStyle, attrOffset)
+	v.AddAll(AttrClass, AttrStyle, AttrOffset)
 	// DOM interface
-	v.Add(domSVGStopElement)
-	elements[elemStop] = v
+	v.Add(DomSVGStopElement)
+	Elements[ElemStop] = v
 	v.Clear()
 
 	// <style>
@@ -1643,16 +1643,16 @@ func init() {
 	// Any elements or character data.
 	// Attributes
 	v.AddAll(coreAttributes...)
-	v.AddAll(attrType, attrMedia, attrTitle)
+	v.AddAll(AttrType, AttrMedia, AttrTitle)
 	// DOM interface
-	v.Add(domSVGStyleElement)
-	elements[elemStyle] = v
+	v.Add(DomSVGStyleElement)
+	Elements[ElemStyle] = v
 	v.Clear()
 
 	// <svg>
 	// https://dev.w3.org/SVG/profiles/1.1F2/publish/styling.html#StyleElement
 	// Catagory
-	v.AddAll(cataContainerElement, cataStructuralElement)
+	v.AddAll(CataContainerElement, CataStructuralElement)
 	//
 	// Content model
 	// Any number of the following elements, in any order:
@@ -1662,11 +1662,11 @@ func init() {
 	v.AddAll(structuralElements...)
 	v.AddAll(gradientElements...)
 	v.AddAll(
-		elemA, elemAltGlyphDef, elemClipPath, elemColorProfile,
-		elemCursor, elemFilter, elemFont, elemFontFace,
-		elemForeignObject, elemImage, elemMarker, elemMask,
-		elemPattern, elemScript, elemStyle, elemSwitch,
-		elemText, elemView,
+		ElemA, ElemAltGlyphDef, ElemClipPath, ElemColorProfile,
+		ElemCursor, ElemFilter, ElemFont, ElemFontFace,
+		ElemForeignObject, ElemImage, ElemMarker, ElemMask,
+		ElemPattern, ElemScript, ElemStyle, ElemSwitch,
+		ElemText, ElemView,
 	)
 	// Attributes
 	v.AddAll(conditionalProcessingAttributes...)
@@ -1675,21 +1675,21 @@ func init() {
 	v.AddAll(graphicalEventAttributes...)
 	v.AddAll(presentationAttributes...)
 	v.AddAll(
-		attrClass, attrStyle, attrExternalResourcesRequired,
-		attrX, attrY, attrWidth, attrHeight, attrViewBox,
-		attrPreserveAspectRatio, attrZoomAndPan, attrVersion,
-		attrContentScriptType, attrContentStyleType, attrX,
-		attrY, attrWidth, attrHeight, attrVersion,
-		attrBaseProfile,
+		AttrClass, AttrStyle, AttrExternalResourcesRequired,
+		AttrX, AttrY, AttrWidth, AttrHeight, AttrViewBox,
+		AttrPreserveAspectRatio, AttrZoomAndPan, AttrVersion,
+		AttrContentScriptType, AttrContentStyleType, AttrX,
+		AttrY, AttrWidth, AttrHeight, AttrVersion,
+		AttrBaseProfile,
 	)
 	// DOM interface
-	v.Add(domSVGSVGElement)
-	elements[elemSvg] = v
+	v.Add(DomSVGSVGElement)
+	Elements[ElemSvg] = v
 	v.Clear()
 
 	// <switch>
 	// Catagory
-	v.Add(cataContainerElement)
+	v.Add(CataContainerElement)
 	//
 	// Content model
 	// Any number of the following elements, in any order:
@@ -1697,8 +1697,8 @@ func init() {
 	// descriptive elements
 	// shape elements
 	v.AddAll(
-		elemA, elemForeignObject, elemG, elemImage, elemSvg,
-		elemSwitch, elemText, elemUse,
+		ElemA, ElemForeignObject, ElemG, ElemImage, ElemSvg,
+		ElemSwitch, ElemText, ElemUse,
 	)
 	//
 	// Attributes
@@ -1707,18 +1707,18 @@ func init() {
 	v.AddAll(graphicalEventAttributes...)
 	v.AddAll(presentationAttributes...)
 	v.AddAll(
-		attrClass, attrStyle, attrExternalResourcesRequired,
-		attrTransform,
+		AttrClass, AttrStyle, AttrExternalResourcesRequired,
+		AttrTransform,
 	)
 	// DOM interface
-	v.Add(domSVGSwitchElement)
-	elements[elemSwitch] = v
+	v.Add(DomSVGSwitchElement)
+	Elements[ElemSwitch] = v
 	v.Clear()
 
 	// <symbol>
 	// https://dev.w3.org/SVG/profiles/1.1F2/publish/struct.html#SymbolElement
 	// Catagory
-	v.AddAll(cataContainerElement, cataStructuralElement)
+	v.AddAll(CataContainerElement, CataStructuralElement)
 	// Content model
 	// Any number of the following elements, in any order:
 	v.AddAll(animationElements...)
@@ -1727,60 +1727,60 @@ func init() {
 	v.AddAll(structuralElements...)
 	v.AddAll(gradientElements...)
 	v.AddAll(
-		elemA, elemAltGlyphDef, elemClipPath, elemColorProfile,
-		elemCursor, elemFilter, elemFont, elemFontFace,
-		elemForeignObject, elemImage, elemMarker, elemMask,
-		elemPattern, elemScript, elemStyle, elemSwitch,
-		elemText, elemView,
+		ElemA, ElemAltGlyphDef, ElemClipPath, ElemColorProfile,
+		ElemCursor, ElemFilter, ElemFont, ElemFontFace,
+		ElemForeignObject, ElemImage, ElemMarker, ElemMask,
+		ElemPattern, ElemScript, ElemStyle, ElemSwitch,
+		ElemText, ElemView,
 	)
 	// Attributes
 	v.AddAll(coreAttributes...)
 	v.AddAll(graphicalEventAttributes...)
 	v.AddAll(presentationAttributes...)
 	v.AddAll(
-		attrClass, attrStyle, attrExternalResourcesRequired,
-		attrPreserveAspectRatio, attrViewBox,
+		AttrClass, AttrStyle, AttrExternalResourcesRequired,
+		AttrPreserveAspectRatio, AttrViewBox,
 	)
 	// DOM interface
-	v.Add(domSVGSymbolElement)
-	elements[elemSymbol] = v
+	v.Add(DomSVGSymbolElement)
+	Elements[ElemSymbol] = v
 	v.Clear()
 
 	// <text>
 	// https://dev.w3.org/SVG/profiles/1.1F2/publish/text.html#TextElement
 	// Catagory
-	v.AddAll(cataGraphicsElement, cataTextContentElement)
+	v.AddAll(CataGraphicsElement, CataTextContentElement)
 	// Content model
 	// Any number of the following elements, in any order:
 	v.AddAll(animationElements...)
 	v.AddAll(descriptiveElements...)
-	v.AddAll(cataTextContentChildElement)
-	v.Add(elemA)
+	v.AddAll(CataTextContentChildElement)
+	v.Add(ElemA)
 	// Attributes
 	v.AddAll(conditionalProcessingAttributes...)
 	v.AddAll(coreAttributes...)
 	v.AddAll(graphicalEventAttributes...)
 	v.AddAll(presentationAttributes...)
 	v.AddAll(
-		attrClass, attrStyle, attrExternalResourcesRequired,
-		attrTransform, attrLengthAdjust, attrX, attrY, attrDx,
-		attrDy, attrRotate, attrTextLength,
+		AttrClass, AttrStyle, AttrExternalResourcesRequired,
+		AttrTransform, AttrLengthAdjust, AttrX, AttrY, AttrDx,
+		AttrDy, AttrRotate, AttrTextLength,
 	)
 	// DOM interface
-	v.Add(domSVGTextElement)
-	elements[elemText] = v
+	v.Add(DomSVGTextElement)
+	Elements[ElemText] = v
 	v.Clear()
 
 	// <textPath>
 	// https://dev.w3.org/SVG/profiles/1.1F2/publish/text.html#TextPathElement
 	// Catagory
-	v.AddAll(cataTextContentElement, cataTextContentChildElement)
+	v.AddAll(CataTextContentElement, CataTextContentChildElement)
 	// Content model
 	// Any number of the following elements, in any order:
 	v.AddAll(descriptiveElements...)
 	v.AddAll(
-		elemA, elemAltGlyph, elemAnimate, elemAnimateColor,
-		elemSet, elemTref, elemTspan,
+		ElemA, ElemAltGlyph, ElemAnimate, ElemAnimateColor,
+		ElemSet, ElemTref, ElemTspan,
 	)
 	// Attributes
 	v.AddAll(conditionalProcessingAttributes...)
@@ -1789,35 +1789,35 @@ func init() {
 	v.AddAll(presentationAttributes...)
 	v.AddAll(xlinkAttributes...)
 	v.AddAll(
-		attrClass, attrStyle, attrExternalResourcesRequired,
-		attrXlinkHref, attrStartOffset, attrMethod, attrSpacing,
+		AttrClass, AttrStyle, AttrExternalResourcesRequired,
+		AttrXlinkHref, AttrStartOffset, AttrMethod, AttrSpacing,
 	)
 	// DOM interface
-	v.Add(domSVGTextPathElement)
-	elements[elemTextPath] = v
+	v.Add(DomSVGTextPathElement)
+	Elements[ElemTextPath] = v
 	v.Clear()
 
 	// <title>
 	// Catagory
-	v.Add(cataDescriptiveElement)
+	v.Add(CataDescriptiveElement)
 	// Content model
 	// Any elements or character data.
 	// Attributes
 	v.AddAll(coreAttributes...)
-	v.AddAll(attrClass, attrStyle)
+	v.AddAll(AttrClass, AttrStyle)
 	// DOM interface
-	v.Add(domSVGTitleElement)
-	elements[elemTitle] = v
+	v.Add(DomSVGTitleElement)
+	Elements[ElemTitle] = v
 	v.Clear()
 
 	// <tref>
 	// https://dev.w3.org/SVG/profiles/1.1F2/publish/text.html#TRefElement
 	// Catagory
-	v.AddAll(cataTextContentElement, cataTextContentChildElement)
+	v.AddAll(CataTextContentElement, CataTextContentChildElement)
 	// Content model
 	// Any number of the following elements, in any order:
 	v.AddAll(descriptiveElements...)
-	v.AddAll(elemAnimate, elemAnimateColor, elemSet)
+	v.AddAll(ElemAnimate, ElemAnimateColor, ElemSet)
 	// Attributes
 	v.AddAll(conditionalProcessingAttributes...)
 	v.AddAll(coreAttributes...)
@@ -1825,24 +1825,24 @@ func init() {
 	v.AddAll(presentationAttributes...)
 	v.AddAll(xlinkAttributes...)
 	v.AddAll(
-		attrClass, attrStyle, attrExternalResourcesRequired,
-		attrXlinkHref,
+		AttrClass, AttrStyle, AttrExternalResourcesRequired,
+		AttrXlinkHref,
 	)
 	// DOM interface
-	v.Add(domSVGTRefElement)
-	elements[elemTref] = v
+	v.Add(DomSVGTRefElement)
+	Elements[ElemTref] = v
 	v.Clear()
 
 	// <tspan>
 	// https://dev.w3.org/SVG/profiles/1.1F2/publish/text.html#TSpanElement
 	// Catagory
-	v.AddAll(cataTextContentElement, cataTextContentChildElement)
+	v.AddAll(CataTextContentElement, CataTextContentChildElement)
 	// Content model
 	// Any number of the following elements, in any order:
 	v.AddAll(descriptiveElements...)
 	v.AddAll(
-		elemA, elemAltGlyph, elemAnimate, elemAnimateColor,
-		elemSet, elemTref, elemTspan,
+		ElemA, ElemAltGlyph, ElemAnimate, ElemAnimateColor,
+		ElemSet, ElemTref, ElemTspan,
 	)
 	// Attributes
 	v.AddAll(conditionalProcessingAttributes...)
@@ -1850,21 +1850,21 @@ func init() {
 	v.AddAll(graphicalEventAttributes...)
 	v.AddAll(presentationAttributes...)
 	v.AddAll(
-		attrClass, attrStyle, attrExternalResourcesRequired,
-		attrX, attrY, attrDx, attrDy, attrRotate,
-		attrTextLength, attrLengthAdjust,
+		AttrClass, AttrStyle, AttrExternalResourcesRequired,
+		AttrX, AttrY, AttrDx, AttrDy, AttrRotate,
+		AttrTextLength, AttrLengthAdjust,
 	)
 	// DOM interface
-	v.Add(domSVGTSpanElement)
-	elements[elemTspan] = v
+	v.Add(DomSVGTSpanElement)
+	Elements[ElemTspan] = v
 	v.Clear()
 
 	// <use>
 	// https://dev.w3.org/SVG/profiles/1.1F2/publish/struct.html#UseElement
 	// Catagory
 	v.AddAll(
-		cataGraphicsElement, cataGraphicsReferencingElement,
-		cataStructuralElement,
+		CataGraphicsElement, CataGraphicsReferencingElement,
+		CataStructuralElement,
 	)
 	// Content model
 	// Any number of the following elements, in any order:
@@ -1877,13 +1877,13 @@ func init() {
 	v.AddAll(presentationAttributes...)
 	v.AddAll(xlinkAttributes...)
 	v.AddAll(
-		attrClass, attrStyle, attrExternalResourcesRequired,
-		attrTransform, attrX, attrY, attrWidth, attrHeight,
-		attrXlinkHref,
+		AttrClass, AttrStyle, AttrExternalResourcesRequired,
+		AttrTransform, AttrX, AttrY, AttrWidth, AttrHeight,
+		AttrXlinkHref,
 	)
 	// DOM interface
-	v.Add(domSVGUseElement)
-	elements[elemUse] = v
+	v.Add(DomSVGUseElement)
+	Elements[ElemUse] = v
 	v.Clear()
 
 	// <view>
@@ -1896,12 +1896,12 @@ func init() {
 	// Attributes
 	v.AddAll(coreAttributes...)
 	v.AddAll(
-		attrExternalResourcesRequired, attrViewBox,
-		attrPreserveAspectRatio, attrZoomAndPan, attrViewTarget,
+		AttrExternalResourcesRequired, AttrViewBox,
+		AttrPreserveAspectRatio, AttrZoomAndPan, AttrViewTarget,
 	)
 	// DOM interface
-	v.Add(domSVGViewElement)
-	elements[elemView] = v
+	v.Add(DomSVGViewElement)
+	Elements[ElemView] = v
 	v.Clear()
 
 	// <vkern>
@@ -1912,9 +1912,9 @@ func init() {
 	// empty
 	// Attributes
 	v.AddAll(coreAttributes...)
-	v.AddAll(attrU1, attrG1, attrU2, attrG2, attrK)
+	v.AddAll(AttrU1, AttrG1, AttrU2, AttrG2, AttrK)
 	// DOM interface
-	v.Add(domSVGHKernElement)
-	elements[elemVkern] = v
+	v.Add(DomSVGHKernElement)
+	Elements[ElemVkern] = v
 	v.Clear()
 }
