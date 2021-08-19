@@ -16,7 +16,6 @@ func Default(in io.ReadCloser, c *conf.Config) {
 	//err := setAttrStyle(l, root, "words", replace{"style", "font-family", "monospace"})
 	if err != nil {
 		fmt.Println(err)
-		return
 	}
 	//pprint(root)
 }

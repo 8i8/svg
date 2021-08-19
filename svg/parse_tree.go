@@ -3,77 +3,121 @@ package svg
 import (
 	"fmt"
 	"io"
+	"log"
 	"svg/svg/xml"
 )
 
 const verbose = false
 
+// Type defines the type of xml node.
+type Type int
+
+const (
+	Error Type = iota
+	Root
+	StartElement
+	EndElement
+	CharData
+	Comment
+	ProcInst
+	Directive
+	End
+)
+
 type parser struct {
-	*head
+	head    *Node
 	current **Node
 	depth   int
+	endelem bool // endelem tracks when an xml StartElement closes ritht away
 }
 
-type head struct {
-	node, FirstChild, LastChild, PrevSibling, NextSibling *Node
+type token struct {
+	typ Type
+	xml xml.Token
 }
 
 type Node struct {
 	Parent, FirstChild, LastChild, PrevSibling, NextSibling *Node
 
-	Elem xml.Token
+	Elem token
 }
 
-func (p *parser) init() {
-	p.head = new(head)
+func (p *parser) init(n *Node) {
+	p.head = n
+	p.head.Parent = new(Node)
+	p.head.Parent.Elem.typ = Root
+	p.head.Parent.FirstChild = p.head
+	p.head.Parent.LastChild = p.head
+	p.current = &(p.head)
 }
 
-// copyNode returns a copy of the given node.
-func copyNode(t xml.Token) (node xml.Token) {
+// makeNode returns a copy of the given node.
+func makeNode(t xml.Token) (node *Node) {
+	node = new(Node)
 	switch v := t.(type) {
 	case xml.StartElement:
-		return v.Copy()
+		node.Elem = token{StartElement, v.Copy()}
 	case xml.EndElement:
-		return t
+		node.Elem = token{EndElement, t}
 	case xml.CharData:
-		return v.Copy()
+		node.Elem = token{CharData, v.Copy()}
 	case xml.Comment:
-		return v.Copy()
+		node.Elem = token{Comment, v.Copy()}
 	case xml.ProcInst:
-		return v.Copy()
+		node.Elem = token{ProcInst, v.Copy()}
 	case xml.Directive:
-		return v.Copy()
+		node.Elem = token{Directive, v.Copy()}
 	}
 	return
 }
 
-// addSibling sets the node for many of the xml.Token types for the
-// parseToken function.
-func (p *parser) addSibling(v xml.Token) {
-	if p.current == nil {
-		p.node = &Node{Elem: v}
-		p.current = &p.node
-		return
+// addLastSibling adds an EndElement, linking back up to the orginating
+// parent.
+func (p *parser) addLastSibling(n *Node) {
+	if (*p.current) == nil {
+		log.Fatalf("busted last sibling: %#v\n", n.Elem)
 	}
-	(*p.current).NextSibling = &Node{Elem: v}
-	(*p.current).NextSibling.Parent = (*p.current).Parent
-	(*p.current).NextSibling.PrevSibling = (*p.current)
-	p.current = &(*p.current).NextSibling
-	if (*p.current).Parent != nil {
-		(*p.current).Parent.LastChild = (*p.current)
+	if (*p.current).Parent == nil {
+		log.Fatalf("busted last sibling has no parent: %#v\n", n.Elem)
 	}
+	n.Parent = (*p.current).Parent
+	n.PrevSibling = (*p.current)
+	(*p.current).NextSibling = n
+	(*p.current).Parent.LastChild = n
+	p.current = &(*p.current).Parent
 }
 
-func (p *parser) addChild(v xml.Token) {
-	if p.current == nil {
-		p.node = &Node{Elem: v}
-		p.current = &p.node
+// addSibling sets the node for many of the xml.Token types for the
+// parseToken function.
+func (p *parser) addSibling(n *Node) {
+	if (*p.current) == nil {
+		log.Fatalf("busted sibling: %#v\n", n.Elem)
+	}
+	n.PrevSibling = (*p.current)
+	n.Parent = (*p.current).Parent
+	(*p.current).NextSibling = n
+	p.current = &(*p.current).NextSibling
+}
+
+func (p *parser) addChild(n *Node) {
+	if (*p.current) == nil {
+		log.Fatalf("busted child: %#v\n", n.Elem)
+	}
+	if (*p.current).Parent == nil {
+		log.Fatalf("busted last sibling has no parent: %#v\n", n.Elem)
+	}
+	if (*p.current).FirstChild == nil {
+		(*p.current).FirstChild = n
+		(*p.current).FirstChild.Parent = (*p.current)
+		(*p.current).LastChild = (*p.current).FirstChild
+		p.current = &(*p.current).FirstChild
 		return
 	}
-	(*p.current).FirstChild = &Node{Elem: v}
-	(*p.current).FirstChild.Parent = (*p.current)
-	(*p.current).LastChild = (*p.current).FirstChild
-	p.current = &(*p.current).FirstChild
+	n.PrevSibling = (*p.current).LastChild
+	n.Parent = (*p.current)
+	(*p.current).LastChild.NextSibling = n
+	(*p.current).LastChild = n
+	p.current = &(*p.current).LastChild
 }
 
 // addToParseTree progressively constructs a parse tree.
@@ -86,84 +130,114 @@ func (p *parser) addChild(v xml.Token) {
 //	ProcInst
 //	Directive
 //
-func (p *parser) addToParseTree(t, n xml.Token) {
-	switch v := t.(type) {
-	case xml.StartElement:
-		if _, ok := n.(xml.EndElement); ok {
-			p.addSibling(v.Copy())
+func (p *parser) addToParseTree(current, next *Node) {
+	switch current.Elem.typ {
+	case StartElement:
+		if next.Elem.typ == EndElement {
+			// The next token is an EndElement so we need to
+			// add this as a sibling rather than as a child.
+			p.addSibling(current)
+			p.endelem = true
 			if verbose {
+				v := current.Elem.xml.(xml.StartElement)
 				fmt.Println("StartElement: sibling", v.Name.Local)
 			}
 		} else {
-			p.addChild(v.Copy())
+			p.addChild(current)
 			if verbose {
+				v := current.Elem.xml.(xml.StartElement)
 				fmt.Println("StartElement: nested:", v.Name.Local)
 			}
 		}
 		if verbose {
+			v := current.Elem.xml.(xml.StartElement)
 			for _, atr := range v.Attr {
 				fmt.Printf("\t%s: %s\n", atr.Name.Local, atr.Value)
 			}
 		}
-	case xml.EndElement:
-		p.addSibling(v)
+	case EndElement:
+		// TODO now this function needs to know whether or not
+		// the EndElement has been nesting or not.
+		if p.endelem {
+			p.addSibling(current)
+			p.endelem = false
+		} else {
+			p.addLastSibling(current)
+		}
 		if verbose {
+			v := current.Elem.xml.(xml.EndElement)
 			fmt.Println("EndElement:", v.Name.Local)
 		}
-	case xml.CharData:
-		p.addSibling(v.Copy())
+	case CharData:
+		p.addSibling(current)
 		if verbose {
+			v := current.Elem.xml.(xml.CharData)
 			fmt.Printf("CharData: %#v\n", v)
 		}
-	case xml.Comment:
-		p.addSibling(v.Copy())
+	case Comment:
+		p.addSibling(current)
 		if verbose {
+			v := current.Elem.xml.(xml.Comment)
 			fmt.Printf("Comment: %s\n", string(v))
 		}
-	case xml.ProcInst:
-		p.addSibling(v.Copy())
+	case ProcInst:
+		p.addSibling(current)
 		if verbose {
+			v := current.Elem.xml.(xml.ProcInst)
 			fmt.Printf("ProcInst: %v\n", v)
 		}
-	case xml.Directive:
-		p.addSibling(v.Copy())
+	case Directive:
+		p.addSibling(current)
 		if verbose {
+			v := current.Elem.xml.(xml.Directive)
 			fmt.Printf("Directive: %s\n", string(v))
 		}
 	default:
-		fmt.Printf("Unknown token: %#v\n", v)
+		fmt.Printf("Unknown token: %#v\n", current.Elem.xml)
 	}
 	return
 }
 
+// parse the input stream top down, with a lookahead of one token.
 func (p *parser) parse(in io.Reader) *Node {
-	p.init()
 	d := xml.NewDecoder(in)
 
-	var token, next xml.Token
-	var err error
+	var current, next *Node
 
-	token, err = d.Token()
+	// Set the first token into the parser.
+	tkxml, err := d.Token()
 	if err != nil {
 		fmt.Println("svg/svg: parse:", err)
 		return nil
 	}
-	token = copyNode(token)
+	p.init(makeNode(tkxml))
 
-	// Scan tokens.
+	// We need to scan with a lookahead of one token, for this we
+	// need to prepare one token in advance.
+	tkxml, err = d.Token()
+	if err != nil {
+		fmt.Println("svg/svg: parse:", err)
+		return nil
+	}
+	current = makeNode(tkxml)
+
 	for {
-		next, err = d.Token()
-		if err == io.EOF {
-			p.addToParseTree(token, next)
-			break
-		} else if err != nil {
-			fmt.Println("svg/svg: parse:", err)
+		tkxml, err = d.Token()
+		if err != nil && err != io.EOF {
+			fmt.Println("error: svg/svg: parse:", err)
 			continue
 		}
-		p.addToParseTree(token, next)
-		token = copyNode(next)
+		// We will lookahead using this token whilst acting upon
+		// ther current token.
+		next = makeNode(tkxml)
+		if err != nil {
+			p.addToParseTree(current, next)
+			break
+		}
+		p.addToParseTree(current, next)
+		current = next
 	}
-	return p.head.node
+	return p.head
 }
 
 func Parse(in io.ReadCloser) *Node {

@@ -147,9 +147,10 @@ func (i iterator) copyFormatNewLine(c xml.CharData) {
 }
 
 func PrettyPrint(i *iterator, n *Node) *Node {
-	switch v := n.Elem.(type) {
-	case xml.StartElement:
-
+	switch n.Elem.typ {
+	case Root:
+	case StartElement:
+		v := n.Elem.xml.(xml.StartElement)
 		i.indentation()
 
 		// Name
@@ -182,10 +183,10 @@ func PrettyPrint(i *iterator, n *Node) *Node {
 			return n
 		}
 
-		// If there is a next sibling then this must be an
-		// element with an intigrated end tag, remove the tag
-		// from the stack closing its state.
-		if _, ok := n.NextSibling.Elem.(xml.EndElement); ok {
+		// If there is a next sibling which is an EndElement
+		// then this must be an element with an intigrated end
+		// tag, remove the tag from the stack closing its state.
+		if n.NextSibling.Elem.typ == EndElement {
 			io.WriteString(i.w, " />")
 			i.pop()
 			return n.NextSibling
@@ -194,39 +195,44 @@ func PrettyPrint(i *iterator, n *Node) *Node {
 		// We have arrived end of the open element tag and need
 		// to close it as the next tag will be nested, if the
 		// next tag is CharData then skip the new line char.
-		i.depth++
 		io.WriteString(i.w, ">")
+		i.depth++
 
-	case xml.EndElement:
+	case EndElement:
+		v := n.Elem.xml.(xml.EndElement)
 		i.depth--
 		i.indentation()
 		io.WriteString(i.w, "</"+v.Name.Local+">")
 		i.pop()
 
-	case xml.CharData:
+	case CharData:
+		v := n.Elem.xml.(xml.CharData)
 		if processingText(i.peek()) {
 			i.w.Write([]byte(v))
 		} else {
 			i.copyFormatNewLine(v)
 		}
 
-	case xml.Comment:
+	case Comment:
+		v := n.Elem.xml.(xml.Comment)
 		i.indentation()
 		io.WriteString(i.w, "<!--")
 		i.w.Write([]byte(v))
 		io.WriteString(i.w, "-->")
 
-	case xml.ProcInst:
+	case ProcInst:
+		v := n.Elem.xml.(xml.ProcInst)
 		i.indentation()
 		io.WriteString(i.w, "<?"+v.Target+" ")
 		i.w.Write(v.Inst)
 		io.WriteString(i.w, "?>")
 
-	case xml.Directive:
+	case Directive:
+		v := n.Elem.xml.(xml.Directive)
 		i.indentation()
 		i.w.Write(v)
 	default:
-		fmt.Printf("svg/xml: printNode: unknown type: %#v\n", v)
+		fmt.Printf("svg/xml: printNode: unknown type: %#v\n", n.Elem)
 	}
 	return n
 }
@@ -249,10 +255,10 @@ func retrieveElemByID(node *Node, id string) IterFunc {
 		if n == nil {
 			panic("expected a valid node")
 		}
-		elem, ok := n.Elem.(xml.StartElement)
-		if !ok {
+		if n.Elem.typ != StartElement {
 			return n
 		}
+		elem := n.Elem.xml.(xml.StartElement)
 		for _, attr := range elem.Attr {
 			if attr.Name.Local == "id" && attr.Value == id {
 				*node = *n
@@ -267,10 +273,10 @@ func insertElemById(node *Node, id string) IterFunc {
 		if n == nil {
 			panic("expected a valid node")
 		}
-		elem, ok := n.Elem.(xml.StartElement)
-		if !ok {
+		if n.Elem.typ != StartElement {
 			return n
 		}
+		elem := n.Elem.xml.(xml.StartElement)
 		for _, a := range elem.Attr {
 			if a.Name.Local == "id" && a.Value == id {
 				*n = *node
@@ -316,13 +322,15 @@ func checkAttrID(l *lex.Lexer, e xml.StartElement, id string, r ...replace) {
 func setAttrStyle(l *lex.Lexer, n *Node, id string, repl ...replace) error {
 	node := &Node{}
 	n.Iterate(os.Stdout, retrieveElemByID(node, id))
-	if node == nil || node.Elem == nil {
+	if node == nil || node.Elem.xml == nil {
 		return fmt.Errorf("id %q not found", id)
 	}
-	if e, ok := node.Elem.(xml.StartElement); ok {
-		checkAttrID(l, e, id, repl...)
-		node.Elem = e
+	if node.Elem.typ != StartElement {
+		return fmt.Errorf("not a StartElement: %q", node.Elem.typ)
 	}
+	e := node.Elem.xml.(xml.StartElement)
+	checkAttrID(l, e, id, repl...)
+	node.Elem.xml = e
 	return nil
 
 }
