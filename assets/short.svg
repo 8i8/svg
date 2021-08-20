@@ -1,29 +1,46 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 <svg
-   width="1440"
-   height="528.46301"
-   viewBox="0 0 380.99999 139.82251"
-   version="1.1"
-   id="svg5"
-   inkscape:version="1.1 (c68e22c387, 2021-05-23)"
-   sodipodi:docname="XMRT New Line 1.svg"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:svg="http://www.w3.org/2000/svg">
-   <text
-      xml:space="preserve"
-			style="fill: red; stroke-width:0.1px; stroke:#0000ff"
-      id="flame"
-      x="269.03461"
-      y="147.68755"
-      id="text2351-9">
-      <tspan
-        sodipodi:role="line"
-        id="tspan2349-6"
-        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'Microsoft YaHei UI';-inkscape-font-specification:'Microsoft YaHei UI';fill:#ffffff;fill-opacity:1;stroke-width:0.264583"
-        x="269.03461"
-        y="147.68755">3</tspan>
+	width="1440"
+	height="528.46301"
+	viewBox="0 0 380.99999 139.82251"
+	version="1.1"
+	id="svg5"
+	inkscape:version="1.1 (c68e22c387, 2021-05-23)"
+	sodipodi:docname="XMRT New Line 1.svg"
+	xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+	xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+	xmlns="http://www.w3.org/2000/svg"
+	xmlns:svg="http://www.w3.org/2000/svg">
+
+	<text
+		xml:space="preserve"
+		style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:0.75;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
+		x="16.11175"
+		y="72.575165"
+		id="text44844"><tspan
+			 sodipodi:role="line"
+			 id="tspan44842"
+			 style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'Microsoft YaHei UI';-inkscape-font-specification:'Microsoft YaHei UI';text-align:center;text-anchor:middle;stroke-width:0.264583"
+			 x="16.11175"
+			 y="72.575165">岩內</tspan><tspan
+			 sodipodi:role="line"
+			 style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.64444px;font-family:'Microsoft YaHei UI';-inkscape-font-specification:'Microsoft YaHei UI';text-align:center;text-anchor:middle;stroke-width:0.264583"
+			 x="16.11175"
+			 y="80.779182"
+			 id="tspan49958">Yannei</tspan></text>
+	<text
+		xml:space="preserve"
+		style="fill: red; stroke-width:0.1px; stroke:#0000ff"
+		id="flame"
+		x="269.03461"
+		y="147.68755"
+		id="text2351-9">
+			<tspan
+			sodipodi:role="line"
+			id="tspan2349-6"
+			style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'Microsoft YaHei UI';-inkscape-font-specification:'Microsoft YaHei UI';fill:#ffffff;fill-opacity:1;stroke-width:0.264583"
+			x="269.03461"
+			y="147.68755">3</tspan>
   </text>
 </svg>
