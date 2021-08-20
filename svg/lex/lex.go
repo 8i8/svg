@@ -29,23 +29,25 @@ type messager struct {
 
 // Lexer holds the state of the scanner.
 type Lexer struct {
-	elem  string   // used for error reports and selecting attribute sets.
-	attr  string   // the elements attribute that is being scanned.
-	input string   // string being scanned.
-	start int      // start position of this item.
-	pos   int      // current position in the input.
-	width int      // width of last rune read.
-	count int      // counts variables between brackets.
-	lex   messager // channels for messaging the lexer.
-	anlz  messager // channels for messaging the anylyzer.
+	elem   string   // used for error reports and selecting attribute sets.
+	attr   string   // the elements attribute that is being scanned.
+	input  string   // string being scanned.
+	start  int      // start position of this item.
+	pos    int      // current position in the input.
+	width  int      // width of last rune read.
+	count  int      // counts variables between brackets.
+	lex    messager // channels for messaging the lexer.
+	anlz   messager // channels for messaging the anylyzer.
+	Output []Item
 }
 
 // NewLexer returns a lexer set with the given name and input string if
 // they are provided, however none are required to create the lexer.
 func NewLexer() *Lexer {
 	l := &Lexer{
-		lex:  messager{make(chan Item, 1), make(chan Item), false},
-		anlz: messager{make(chan Item, 1), make(chan Item), false},
+		lex:    messager{make(chan Item, 1), make(chan Item), false},
+		anlz:   messager{make(chan Item, 1), make(chan Item), false},
+		Output: make([]Item, 0, 100),
 	}
 	return l
 }
