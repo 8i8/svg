@@ -181,26 +181,20 @@ func PrettyPrint(i *iterator, n *Node) *Node {
 		i.stack.pop()
 		i.depth-- // Decrement nesting.
 
-		// If there is no next sibling we need to close the tag
-		// and indent.
-		if n.NextSibling == nil {
-			io.WriteString(i.w, ">")
-			i.depth++
-			return n
-		}
+		// If the next sibling is an EndElement and the node has
+		// no children, this must be an element with an
+		// intigrated end tag, remove the tag from the stack
+		// closing its state.
+		if n.FirstChild == nil && n.NextSibling != nil &&
+			n.NextSibling.Elem.typ == EndElement {
 
-		// If there is a next sibling which is an EndElement
-		// then this must be an element with an intigrated end
-		// tag, remove the tag from the stack closing its state.
-		if n.NextSibling.Elem.typ == EndElement {
 			io.WriteString(i.w, " />")
 			i.stack.pop()
 			return n.NextSibling
 		}
 
 		// We have arrived end of the open element tag and need
-		// to close it as the next tag will be nested, if the
-		// next tag is CharData then skip the new line char.
+		// to close it as the next tag will be nested.
 		io.WriteString(i.w, ">")
 		i.depth++
 
