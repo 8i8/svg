@@ -114,8 +114,8 @@ func (p *parser) addChild(n *Node) {
 		return
 	}
 	n.PrevSibling = (*p.current).LastChild
-	n.Parent = (*p.current)
 	(*p.current).LastChild.NextSibling = n
+	n.Parent = (*p.current)
 	(*p.current).LastChild = n
 	p.current = &(*p.current).LastChild
 }
@@ -204,32 +204,33 @@ func (p *parser) parse(in io.Reader) *Node {
 
 	var current, next *Node
 
-	// Set the first token into the parser.
-	tkxml, err := d.Token()
+	// Set the first token into the parser, the parsing loop can not
+	// do this as simply as we can from here.
+	xmltoken, err := d.Token()
 	if err != nil {
 		fmt.Println("svg/svg: parse:", err)
 		return nil
 	}
-	p.init(makeNode(tkxml))
+	p.init(makeNode(xmltoken))
 
-	// We need to scan with a lookahead of one token, for this we
-	// need to prepare one token in advance.
-	tkxml, err = d.Token()
+	// We need a lookahead of one token, for this we prepare a token
+	// in advance.
+	xmltoken, err = d.Token()
 	if err != nil {
 		fmt.Println("svg/svg: parse:", err)
 		return nil
 	}
-	current = makeNode(tkxml)
+	current = makeNode(xmltoken)
 
 	for {
-		tkxml, err = d.Token()
+		xmltoken, err = d.Token()
 		if err != nil && err != io.EOF {
 			fmt.Println("error: svg/svg: parse:", err)
 			continue
 		}
-		// We will lookahead using this token whilst acting upon
-		// ther current token.
-		next = makeNode(tkxml)
+		// Lookahead in the parse tree function uses the next
+		// token, whilst acting upon the current.
+		next = makeNode(xmltoken)
 		if err != nil {
 			p.addToParseTree(current, next)
 			break
