@@ -290,27 +290,45 @@ type replace struct {
 	attr, old, new string
 }
 
+func isTyped(a string) {
+}
+
+func loadAttribute(l *lex.Lexer, elem, attr, value string) (i interface{}) {
+	l.Lex(elem, attr, value)
+	for {
+		item := l.Next()
+		if item.EOF() {
+			break
+		}
+		if err := item.Error(); err != nil {
+			fmt.Println(err)
+			continue
+		}
+		l.Output = append(l.Output, item)
+	}
+
+	for _, a := range l.Output {
+		if t := isTyped(a); t != nil {
+		}
+	}
+
+	return
+}
+
+// replaceAttr applies all of the replace requests in the give list if
+// the attribute is found.
 func replaceAttr(l *lex.Lexer, e xml.StartElement, repl ...replace) {
 	for _, r := range repl {
 		for _, a := range e.Attr {
 			if a.Name.Local == r.attr {
-				l.Lex(e.Name.Local, r.attr, a.Value)
-				for {
-					item := l.Next()
-					if item.EOF() {
-						break
-					}
-					if err := item.Error(); err != nil {
-						fmt.Println(err)
-						break
-					}
-					fmt.Println("item:", item)
-				}
+				loadAttribute(l, e.Name.Local, r.attr, a.Value)
 			}
 		}
 	}
 }
 
+// checkAttrID scans all the elemets attributes for one with a matching
+// id.
 func checkAttrID(l *lex.Lexer, e xml.StartElement, id string, r ...replace) {
 	for _, a := range e.Attr {
 		if a.Value == id {
