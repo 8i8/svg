@@ -19,7 +19,7 @@ type IterFunc func(*iterator, *Node) *Node
 
 type stack []string
 
-func (s *stack) add(str string) {
+func (s *stack) push(str string) {
 	*s = append(*s, str)
 }
 
@@ -44,7 +44,7 @@ type iterator struct {
 	w io.Writer
 	// stack maintains state by preserving a last in first out
 	// record of the tag names when nesting.
-	stack
+	stack stack
 	// depth holds the current indentation depth of the iterator.
 	depth int
 	// fn is called upon each iteration.
@@ -104,7 +104,7 @@ func nameSpaceToken(str string) string {
 }
 
 func (i iterator) indentation() {
-	if str := i.peek(); !processingText(str) {
+	if str := i.stack.peek(); !processingText(str) {
 		if cap(i.indent) < i.depth*len(i.ichar) {
 			i.indent = make([]byte, i.depth*len(i.ichar))
 		}
@@ -133,12 +133,12 @@ func insideToken(str string) bool {
 }
 
 func (i iterator) newLineInToken() {
-	if str := i.peek(); insideToken(str) {
+	if str := i.stack.peek(); insideToken(str) {
 		io.WriteString(i.w, "\n")
 	}
 }
 
-func (i iterator) copyFormatNewLine(c xml.CharData) {
+func (i iterator) countCopyNewLines(c xml.CharData) {
 	n := bytes.Count([]byte(c), []byte("\n"))
 	for n > 0 {
 		io.WriteString(i.w, "\n")
@@ -155,8 +155,13 @@ func PrettyPrint(i *iterator, n *Node) *Node {
 
 		// Name
 		io.WriteString(i.w, "<"+v.Name.Local)
-		i.add(v.Name.Local)
-		i.add(v.Name.Local + "-token")
+		// Push onto the stack the name of the token, this will be read
+		// in prossessing functions such as i.indentation so as to know
+		// whether or not to count as being inset.
+		i.stack.push(v.Name.Local)
+		// Push to the stack with a post fix, used to format the
+		// elements attributes.
+		i.stack.push(v.Name.Local + "-token")
 
 		// Attributes.
 		i.depth++ // Augment nesting.
@@ -172,7 +177,8 @@ func PrettyPrint(i *iterator, n *Node) *Node {
 			}
 			io.WriteString(i.w, a.Value+"\"")
 		}
-		i.pop()
+		// Done formaing the initial token, pop the stack.
+		i.stack.pop()
 		i.depth-- // Decrement nesting.
 
 		// If there is no next sibling we need to close the tag
@@ -188,7 +194,7 @@ func PrettyPrint(i *iterator, n *Node) *Node {
 		// tag, remove the tag from the stack closing its state.
 		if n.NextSibling.Elem.typ == EndElement {
 			io.WriteString(i.w, " />")
-			i.pop()
+			i.stack.pop()
 			return n.NextSibling
 		}
 
@@ -203,14 +209,14 @@ func PrettyPrint(i *iterator, n *Node) *Node {
 		i.depth--
 		i.indentation()
 		io.WriteString(i.w, "</"+v.Name.Local+">")
-		i.pop()
+		i.stack.pop()
 
 	case CharData:
 		v := n.Elem.xml.(xml.CharData)
-		if processingText(i.peek()) {
+		if processingText(i.stack.peek()) {
 			i.w.Write([]byte(v))
 		} else {
-			i.copyFormatNewLine(v)
+			i.countCopyNewLines(v)
 		}
 
 	case Comment:
