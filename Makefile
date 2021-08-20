@@ -2,6 +2,9 @@ all:
 	clear
 	go run cmd/main.go -- assets/fire.icon.120.svg
 
+short:
+	clear
+	go run cmd/main.go -- assets/short.svg > temp.svg
 car:
 	clear
 	go run cmd/main.go -- assets/car.svg > temp.svg
@@ -17,6 +20,11 @@ anim:
 ff:
 	clear
 	go run cmd/main.go -- assets/fire.icon.120.svg > temp.svg
+	firefox temp.svg
+
+test:
+	clear
+	go run cmd/main.go -- assets/test.svg > temp.svg
 	firefox temp.svg
 
 debug:
